@@ -970,3 +970,8 @@ html, body, #root {
   letter-spacing: 0.1em;
   z-index: 10;
 }
+
+/* ── Canvas Loader Spinner ───────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

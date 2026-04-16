@@ -10,5 +10,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    headers: {
+      // Cache GLBs and other static assets for 7 days in dev
+      // After the first download, subsequent visits are instant from browser disk cache
+      'Cache-Control': 'public, max-age=604800',
+    },
   },
 })

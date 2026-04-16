@@ -13,9 +13,14 @@ export const useShowroomStore = create((set) => ({
   cameraTransitioning: false,
   setCameraTransitioning: (v) => set({ cameraTransitioning: v }),
 
-  // Hotspot hover
+  // Hotspot hover (from sidebar click/hover)
   hoveredComponent: null,
   setHoveredComponent: (id) => set({ hoveredComponent: id }),
+
+  // Component ID resolved from hovering a 3D mesh on the bike
+  // Read via getState() inside useFrame — does NOT trigger React renders
+  hoveredMeshId: null,
+  setHoveredMeshId: (id) => set({ hoveredMeshId: id }),
 
   // Loading progress
   loadingProgress: 0,
@@ -24,4 +29,10 @@ export const useShowroomStore = create((set) => ({
   // Active filter category
   activeCategory: 'All',
   setActiveCategory: (cat) => set({ activeCategory: cat }),
+
+  // Explode animation progress 0 (assembled) → 1 (fully exploded)
+  // Written by ZoomWatcher every frame — read via getState() to avoid re-renders
+  explodeProgress: 0,
+  setExplodeProgress: (v) => set({ explodeProgress: v }),
 }));
+

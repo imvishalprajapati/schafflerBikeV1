@@ -1,78 +1,314 @@
 import { useRef, useEffect } from 'react'
 import { useGLTF, ContactShadows } from '@react-three/drei'
+import { useThree, useFrame } from '@react-three/fiber'
+import { useNavigate } from 'react-router-dom'
+import * as THREE from 'three'
 import { useShowroomStore } from '../store/useShowroomStore.js'
+import components from '../data/components.js'
 
-export default function BikeViewer() {
-  const { scene } = useGLTF('/models/Bike_draco.glb', '/draco/')
-  const ref = useRef()
+// ── Anchor table (group-local space, same as Hotspot positions) ───────────
+const ANCHOR_ENTRIES = components
+  .filter(c => c.anchor)
+  .map(c => ({ id: c.id, label: c.label, vec: new THREE.Vector3(...c.anchor) }))
 
-  // Track original emissive colors so we can revert when mouse leaves
+// Max distance (group-local) a mesh can be from an anchor to be assigned.
+// Set large so every mesh always gets the nearest component (Voronoi partition).
+const COMPONENT_RADIUS = 100
+
+// How far parts travel at full explosion
+const EXPLODE_SCALE = 2.0
+
+// ── DEV: Anchor calibration mode ─────────────────────────────────────────
+// Ctrl+Click any mesh → logs its group-local X,Y,Z to console.
+// Copy those values into components.js anchor:[] to recalibrate.
+const DEV_PICK_MODE = import.meta.env.DEV
+
+// ── BikeViewer ───────────────────────────────────────────────────────────
+export default function BikeViewer({ groupRef }) {
+  const { scene } = useGLTF('/models/Bike_optimized.glb')
+  const { invalidate } = useThree()
+  const navigate = useNavigate()
+
+  const setHoveredMeshId = useShowroomStore(s => s.setHoveredMeshId)
+
+  // Smooth explode lerp (read/write via ref to avoid React re-renders)
+  const localExplode = useRef(0)
+
+  // componentId → Mesh[] — built once at load time
+  const compGroupsRef = useRef({})
+  // Set of currently highlighted meshes (for O(1) batch clear)
+  const highlightedRef = useRef(new Set())
+  // Currently active component zone (from 3D hover)
+  const activeCompRef = useRef(null)
+  // Last Object3D whose onPointerOver fired
+  const lastEnteredMeshRef = useRef(null)
+
+  // Subscribe to Side Panel hover so 3D highlights
+  const hoveredUiMeshId = useShowroomStore(s => s.hoveredMeshId)
+
+  // ── 1. Scene setup: compute explode dirs + build component groups ────────
   useEffect(() => {
-    if (!scene) return
-    scene.traverse((child) => {
-      if (child.isMesh && child.material) {
-        // Clone the material if it is shared by multiple meshes
-        // This ensures highlighting one bolt doesn't highlight ALL bolts globally
-        child.material = child.material.clone()
-        
-        // Save its native emissive state
-        child.userData.origEmissive = child.material.emissive.clone()
-        child.userData.origEmissiveIntensity = child.material.emissiveIntensity || 0
+    if (!scene || !groupRef?.current) return
+
+    // Bike bounding-box center in scene-local space (for explode directions)
+    const bbox = new THREE.Box3().setFromObject(scene)
+    const bikeCenter = new THREE.Vector3()
+    bbox.getCenter(bikeCenter)
+
+    // ── DEV: Print the bike's bounding box IN GROUP-LOCAL space ───────────
+    // Since the group has only uniform scale + translation (no rotation),
+    // we can worldToLocal the two AABB corners to get the anchor coordinate range.
+    if (import.meta.env.DEV && groupRef.current) {
+      const minW = bbox.min.clone()
+      const maxW = bbox.max.clone()
+      // Transform scene-local → world (scene has no transform as <primitive>)
+      // scene-local = world here because scene sits at the group's child level
+      // and <primitive object={scene}> has no position offset by default.
+      // So we just need groupRef.worldToLocal:
+      const minL = groupRef.current.worldToLocal(minW)
+      const maxL = groupRef.current.worldToLocal(maxW)
+      // Note: worldToLocal inverts scale so min/max may swap axes — take true min/max
+      const trueMin = new THREE.Vector3(Math.min(minL.x, maxL.x), Math.min(minL.y, maxL.y), Math.min(minL.z, maxL.z))
+      const trueMax = new THREE.Vector3(Math.max(minL.x, maxL.x), Math.max(minL.y, maxL.y), Math.max(minL.z, maxL.z))
+      const trueCenter = trueMin.clone().add(trueMax).multiplyScalar(0.5)
+      const trueSize = trueMax.clone().sub(trueMin)
+      console.log('%c[BikeViewer] GROUP-LOCAL bounding box (= anchor coordinate space):',
+        'color:#ff8c00;font-weight:bold')
+      console.log(`  min:    [${trueMin.x.toFixed(3)}, ${trueMin.y.toFixed(3)}, ${trueMin.z.toFixed(3)}]`)
+      console.log(`  max:    [${trueMax.x.toFixed(3)}, ${trueMax.y.toFixed(3)}, ${trueMax.z.toFixed(3)}]`)
+      console.log(`  center: [${trueCenter.x.toFixed(3)}, ${trueCenter.y.toFixed(3)}, ${trueCenter.z.toFixed(3)}]`)
+      console.log(`  size:   ${trueSize.x.toFixed(3)} × ${trueSize.y.toFixed(3)} × ${trueSize.z.toFixed(3)}`)
+      console.log('  Anchors should use values within this range!')
+    }
+
+    // Pre-init groups
+    const groups = {}
+    ANCHOR_ENTRIES.forEach(({ id }) => { groups[id] = [] })
+
+    let totalMeshes = 0
+    let assignedMeshes = 0
+
+    scene.traverse(child => {
+      if (!child.isMesh) return
+      totalMeshes++
+
+      // ─ Explode setup ───────────────────────────────────────────────
+      child.userData.origPos = child.position.clone()
+
+      const mbox = new THREE.Box3().setFromObject(child)
+      const mCenter = new THREE.Vector3()
+      mbox.getCenter(mCenter)
+
+      const dir = mCenter.clone().sub(bikeCenter)
+      const len = dir.length()
+      child.userData.explodeDir = len > 0.001 ? dir.normalize() : new THREE.Vector3(0, 1, 0)
+      // ─ Component-group assignment ──────────────────────────────────
+      // Clear any prior assignments
+      child.userData.componentId = null
+    })
+
+    // Pre-map the components that have explicitly assigned targetMeshes
+    assignedMeshes = 0
+    components.forEach(comp => {
+      if (comp.targetMeshes && comp.targetMeshes.length > 0) {
+        scene.traverse(child => {
+          if (child.isMesh && comp.targetMeshes.includes(child.name)) {
+            child.userData.componentId = comp.id
+            assignedMeshes++
+          }
+        })
       }
     })
-  }, [scene])
 
+    // Dev summary
+    if (import.meta.env.DEV) {
+      console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
+    }
+  }, [scene, groupRef])
+
+  // ── 2. Per-frame explode animation ──────────────────────────────────────
+  useFrame(() => {
+    /* EXPLODE FEATURE COMMENTED OUT FOR NOW
+    const target = useShowroomStore.getState().explodeProgress
+    const prev = localExplode.current
+
+    if (Math.abs(prev - target) > 0.001) {
+      localExplode.current += (target - prev) * 0.09
+      const t = localExplode.current
+
+      scene?.traverse(child => {
+        if (!child.isMesh || !child.userData.origPos) return
+        const { origPos, explodeDir, explodeMag } = child.userData
+        child.position.set(
+          origPos.x + explodeDir.x * explodeMag * EXPLODE_SCALE * t,
+          origPos.y + explodeDir.y * explodeMag * EXPLODE_SCALE * t,
+          origPos.z + explodeDir.z * explodeMag * EXPLODE_SCALE * t,
+        )
+      })
+
+      invalidate()
+    }
+    */
+  })
+
+  // ── 3. Highlight helpers ─────────────────────────────────────────────────
+  // Lazy material clone: only clone when a mesh is first highlighted
+  function ensureOwnMaterial(mesh) {
+    if (mesh.userData.isMaterialCloned) return
+    if (Array.isArray(mesh.material)) {
+      mesh.material = mesh.material.map(m => m.clone())
+    } else {
+      mesh.material = mesh.material.clone()
+    }
+    mesh.userData.isMaterialCloned = true
+  }
+
+  function applyEmissive(mesh, hexColor, intensity) {
+    if (!mesh) return
+    ensureOwnMaterial(mesh)
+    const set = mat => { mat.emissive.set(hexColor); mat.emissiveIntensity = intensity }
+    if (Array.isArray(mesh.material)) mesh.material.forEach(set)
+    else set(mesh.material)
+    highlightedRef.current.add(mesh)
+  }
+
+  function clearAllHighlights() {
+    for (const mesh of highlightedRef.current) {
+      const clear = mat => { mat.emissive.set(0, 0, 0); mat.emissiveIntensity = 0 }
+      if (Array.isArray(mesh.material)) mesh.material.forEach(clear)
+      else clear(mesh.material)
+    }
+    highlightedRef.current.clear()
+  }
+
+  // Monitor side panel hover state (hoveredUiMeshId) and highlight specific targetMeshes
+  useEffect(() => {
+    // We only react if activeCompRef is different, preventing loops between 3D and UI hovers
+    if (hoveredUiMeshId === activeCompRef.current) return
+
+    clearAllHighlights()
+    activeCompRef.current = hoveredUiMeshId || null
+
+    if (hoveredUiMeshId) {
+      const partsDef = components.find(c => c.id === hoveredUiMeshId)
+      // Check if user has explicitly mapped this component to specific meshes
+      if (partsDef && partsDef.targetMeshes && scene) {
+        scene.traverse(child => {
+          if (child.isMesh && partsDef.targetMeshes.includes(child.name)) {
+            applyEmissive(child, '#00893D', 1.1)
+          }
+        })
+        invalidate()
+      }
+    } else {
+      invalidate()
+    }
+  }, [hoveredUiMeshId, scene, invalidate])
+
+  // ── 4. Pointer handlers ──────────────────────────────────────────────────
   const handlePointerOver = (e) => {
-    e.stopPropagation() // Vital: stops the raycaster from piercing through to back meshes
-
+    e.stopPropagation()
     const obj = e.object
-    if (obj.isMesh && obj.material) {
-      console.log(`[Raycaster] Hovered Component Name: "${obj.name}"`)
-      
-      // Highlight with Schaeffler Green
-      obj.material.emissive.set('#00893D')
-      obj.material.emissiveIntensity = 0.8
+    if (!obj.isMesh) return
+
+    lastEnteredMeshRef.current = obj
+
+    clearAllHighlights()
+
+    const compId = obj.userData.componentId
+
+    if (compId) {
+      // Highlight ALL targetMeshes for this explicitly mapped component
+      const partsDef = components.find(c => c.id === compId)
+      if (partsDef && partsDef.targetMeshes && scene) {
+        scene.traverse(child => {
+          if (child.isMesh && partsDef.targetMeshes.includes(child.name)) {
+            applyEmissive(child, '#00893D', 1.1)
+          }
+        })
+      }
+    } else {
+      // Unmapped mesh: Highlight exactly the single mesh being hovered
+      applyEmissive(obj, '#00893D', 1.1)
+    }
+
+    if (compId !== activeCompRef.current) {
+      activeCompRef.current = compId || null
+      setHoveredMeshId(compId || null)
+    }
+    
+    invalidate()
+
+    if (import.meta.env.DEV && compId) {
+      const entry = ANCHOR_ENTRIES.find(a => a.id === compId)
+      console.log(`[Hover] mesh: "${obj.name}" → comp: "${entry?.label ?? compId}"`)
     }
   }
 
   const handlePointerOut = (e) => {
-    const obj = e.object
-    if (obj.isMesh && obj.material && obj.userData.origEmissive) {
-      // Revert to native state
-      obj.material.emissive.copy(obj.userData.origEmissive)
-      obj.material.emissiveIntensity = obj.userData.origEmissiveIntensity
+    // Only clear when the pointer leaves the scene entirely.
+    if (lastEnteredMeshRef.current !== e.object) return
+
+    clearAllHighlights()
+    if (activeCompRef.current !== null) {
+      activeCompRef.current = null
+      setHoveredMeshId(null)
     }
+    invalidate()
   }
 
+  const handleClick = (e) => {
+    e.stopPropagation()
+    const obj = e.object
+
+    // ── DEV: Ctrl+Click = log this mesh's exact name ────────
+    if (DEV_PICK_MODE && e.nativeEvent?.ctrlKey) {
+      console.log(`%c[PICK] Exact mesh name: "${obj.name}"`, 'color:#00893D;font-weight:bold;font-size:16px')
+      console.log(`  To map this, add to components.js:`)
+      console.log(`  targetMeshes: ["${obj.name}"],`)
+      return
+    }
+
+    // Normal click → navigate
+    const compId = obj?.userData?.componentId
+    if (compId) navigate(`/component/${compId}`)
+  }
+
+  // ── 5. JSX ───────────────────────────────────────────────────────────────
   return (
     <>
-      <primitive 
-        ref={ref} 
-        object={scene} 
+      <primitive
+        object={scene}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
+        onClick={handleClick}
       />
 
-      {/* High performance contact shadows instead of dynamic directional shadow grids */}
       <ContactShadows
         position={[0, 0, 0]}
-        opacity={0.8}
+        opacity={0.7}
         scale={10}
-        blur={2}
+        blur={2.5}
         far={2}
         resolution={512}
         color="#000000"
       />
 
-      {/* Subtle floor reflection glow without blocking view */}
+      {/* Floor glow ring */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
         <circleGeometry args={[2.5, 64]} />
         <meshBasicMaterial color="#00893D" transparent opacity={0.03} />
       </mesh>
+
+      {/*
+      DEV: Red spheres at each anchor — shows where current anchors are placed.
+      {DEV_PICK_MODE && ANCHOR_ENTRIES.map(({ id, vec }) => (
+        <mesh key={id} position={vec.toArray()}>
+          <sphereGeometry args={[0.03, 8, 8]} />
+          <meshBasicMaterial color="red" />
+        </mesh>
+      ))}
+      */}
     </>
   )
 }
-
-useGLTF.preload('/models/Bike_draco.glb', '/draco/')
-
-

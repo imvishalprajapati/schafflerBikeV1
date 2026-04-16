@@ -8,7 +8,7 @@ const components = [
     label: "M4C Engine Control Unit",
     category: "Engine Control Units",
     model: "Parts/M4C.glb",
-    anchor: [0.3, 1.4, 0.6],
+    anchor: [0.0, 3.5, 0.5],
     tagline: "Standalone Ride-by-Wire ECU for mid- to high-end motorcycles",
     highlights: ["Small and compact design for both 2 and 4 stroke engines", "Knock sensor compatible (x2)", "Automotive technology"],
     features: [
@@ -40,7 +40,7 @@ const components = [
     label: "M4A/B Twin Spark Mechatronic",
     category: "Engine Control Units",
     model: "Parts/M4A.glb",
-    anchor: [0.25, 1.35, 0.65],
+    anchor: [-1.0, 3.5, 0.0],
     tagline: "ECU with integrated throttle body for light motorcycles and scooters",
     highlights: ["Single/twin sparks solution", "Very compact size and easy mounting", "Throttle body size from ø16 up to 34 mm"],
     features: [
@@ -72,7 +72,7 @@ const components = [
     label: "M4REK Mechatronic",
     category: "Engine Control Units",
     model: "Parts/M4REK.glb",
-    anchor: [0.2, 1.3, 0.7],
+    anchor: [1.0, 3.5, 1.0],
     tagline: "ECU with embedded Electronic Throttle Control for mid-range motorcycles",
     highlights: ["Engine Control Unit with integrated Electronic Throttle Control", "Very compact size", "Easy mounting"],
     features: [
@@ -104,6 +104,7 @@ const components = [
   {
     id: "fuel_injector",
     label: "Fuel Injector — Gasoline Deka 7",
+    targetMeshes: ["final_bike_mod049"],
     category: "Engine",
     model: "Parts/Fuel Injector.glb",
     anchor: [0.0, 1.1, 0.4],
@@ -139,7 +140,7 @@ const components = [
     label: "Knock Sensor",
     category: "Engine",
     model: "Parts/Knock sensor.glb",
-    anchor: [-0.1, 0.9, 0.3],
+    anchor: [-1.5, -1.0, 0.5],
     tagline: "Measures structural vibrations to continuously adjust ignition parameters",
     highlights: ["Worldwide market leader since 1990", ">15 cable and integrated connector versions", "Enabler for emission reduction"],
     features: [
@@ -172,7 +173,7 @@ const components = [
     label: "Pressure Sensor (MAP + Temperature)",
     category: "Engine",
     model: "Parts/pressure sensor.glb",
-    anchor: [-0.15, 1.0, 0.35],
+    anchor: [0.0, 2.0, -2.5],
     tagline: "Small and robust pressure sensor with integrated temperature sensing for manifolds",
     highlights: ["Flexible transfer function calibration", "High accuracy and temperature stability", "Compatible with toughest environments"],
     features: [
@@ -202,7 +203,7 @@ const components = [
     label: "Flex Fuel Sensor",
     category: "Engine",
     model: "Parts/Flex Fuel sensore.glb",
-    anchor: [-0.2, 0.95, 0.4],
+    anchor: [-1.0, -2.0, 2.5],
     tagline: "Detects ethanol concentration in gasoline/ethanol fuel mixture before engine injection",
     highlights: ["Worldwide market leader since 1998", "Highly accurate ethanol prediction", "Signal output within 250 ms after start-up"],
     features: [
@@ -234,7 +235,7 @@ const components = [
     label: "Hydraulic Chain Tensioner",
     category: "Engine",
     model: "Parts/Hydrolic Chain tenssioner.glb",
-    anchor: [0.1, 0.85, 0.2],
+    anchor: [0.5, 2.0, 1.5],
     tagline: "Cost-effective hydraulic eco chain tensioner reducing friction and fuel consumption",
     highlights: ["Outstanding NVH behavior", "Reduced fuel consumption", "Robust and cost-effective design"],
     features: [
@@ -260,7 +261,7 @@ const components = [
     category: "Engine",
     model: "Parts/Rocket arm, Cam Roller, BZ Pin .glb",
     hasExplodedView: true,
-    anchor: [0.05, 0.9, 0.15],
+    anchor: [0.0, 1.5, 0.5],
     tagline: "Wide range of outer rings, needles and pins for various motorcycle applications",
     highlights: ["Easy to assemble with rocker arm", "Optimized friction", "Suitable for engine speed up to 12,000 RPM"],
     features: [
@@ -284,7 +285,7 @@ const components = [
     label: "Crankpin KZK & Pistonpin KBK",
     category: "Engine",
     model: "Parts/Crankpin KZK.glb",
-    anchor: [0.0, 0.8, 0.1],
+    anchor: [0.0, -1.5, 0.0],
     tagline: "Needle bearings at the heart of each small combustion engine",
     highlights: ["High resistance against centrifugal forces", "Improved lubrication access", "Easy assembly"],
     features: [
@@ -314,7 +315,7 @@ const components = [
     category: "Engine",
     model: "Parts/One way Clutch.glb",
     hasExplodedView: true,
-    anchor: [0.15, 0.85, -0.1],
+    anchor: [2.0, -2.0, 1.5],
     tagline: "Roller clutch for electric starter drives with integrated torque limitation",
     highlights: ["Easy to mount", "Low space requirements and reduced weight", "Suitable for high power densities"],
     features: [
@@ -339,7 +340,7 @@ const components = [
     label: "Drawn Cup Needle Roller Bearing (Starter/Primary Drive)",
     category: "Engine",
     model: "Parts/Drawn Cup NRB.glb",
-    anchor: [0.2, 0.8, -0.05],
+    anchor: [2.0, -2.5, 2.5],
     tagline: "Deep drawing technology providing significant cost and precision advantages",
     highlights: ["High load rating capacity", "Weight saving potential", "Cost-efficient deep drawing technology"],
     features: [
@@ -369,7 +370,7 @@ const components = [
     label: "Cylindrical Roller Bearing with Sheet Metal Cage",
     category: "Engine",
     model: "Parts/Cylindrical Roller with sheet metal cage  .glb",
-    anchor: [0.25, 0.75, -0.1],
+    anchor: [-2.0, -2.5, 0.5],
     tagline: "Non-separable self-retaining bearing with higher load rating and reduced friction",
     highlights: ["Higher stiffness", "Controlled rolling elements", "Non-separable — easy to mount"],
     features: [
@@ -400,7 +401,7 @@ const components = [
     label: "Plastic Cage Needle Roller Bearing (K Type)",
     category: "Transmission",
     model: "Parts/Plastic cage NRB.glb",
-    anchor: [-0.3, 0.7, 0.0],
+    anchor: [1.5, -3.0, 3.0],
     tagline: "Compact needle cage for constant mesh gear support in gearboxes",
     highlights: ["Easy assembly with open cage design", "Compact dimensions", "Robust solution"],
     features: [
@@ -429,7 +430,7 @@ const components = [
     label: "Machined Needle Roller Bearing RNA/NK",
     category: "Transmission",
     model: "Parts/Machined Needle roller bearing.glb",
-    anchor: [-0.35, 0.65, 0.0],
+    anchor: [-1.5, -3.0, 3.0],
     tagline: "Machined outer ring with high static load capacity for transmission support",
     highlights: ["Easy assembly with open cage design", "Compact dimensions", "Robust solution"],
     features: [
@@ -457,7 +458,7 @@ const components = [
     label: "Deep Groove Ball Bearings",
     category: "Transmission",
     model: "Parts/Deep Groove Ball Bearings.glb",
-    anchor: [-0.4, 0.6, 0.05],
+    anchor: [0.0, -2.5, 2.5],
     tagline: "Versatile ball bearing for engine and gearbox with reduced friction",
     highlights: ["Higher mileage", "Reduced friction", "Higher lifetime with special heat treatment"],
     features: [
@@ -488,7 +489,7 @@ const components = [
     label: "Drawn Cup Needle Roller Bearing (Swing Arm) HK/HNH",
     category: "Chassis",
     model: "Parts/Drawn Cup NRB.glb",
-    anchor: [-0.5, 0.5, -0.3],
+    anchor: [0.0, -2.5, 4.5],
     tagline: "High load capacity needle bearing for swing arm suspension applications",
     highlights: ["High load rating capacity", "Weight saving potential", "Cost-efficient deep drawing technology"],
     features: [
@@ -516,7 +517,7 @@ const components = [
     label: "Ball Bearing with ABS Encoder Sealing",
     category: "Chassis",
     model: "Parts/Ball Bearing with ABS tonner.glb",
-    anchor: [-0.55, 0.45, -0.35],
+    anchor: [0.0, -4.0, 7.5],
     tagline: "Wheel bearing with integrated encoder sealing for ABS systems",
     highlights: ["Higher accuracy", "Controlled braking", "Go Digital — embedded encoder for ABS"],
     features: [
@@ -543,7 +544,7 @@ const components = [
     label: "Angular Contact Ball Bearing",
     category: "Chassis",
     model: "Parts/Angular Contact  Ball Bearing.glb",
-    anchor: [-0.6, 0.4, -0.4],
+    anchor: [0.0, 2.5, -6.0],
     tagline: "Steering head bearing with special grease for highest resilience",
     highlights: ["Highest resilience — absorbs more shocks", "Outstanding steering feeling", "High precision balls and raceways"],
     features: [
@@ -577,7 +578,7 @@ const components = [
     label: "Steering Head Taper Roller Bearing (TRB)",
     category: "Chassis",
     model: "Parts/Steering Head TRB.glb",
-    anchor: [-0.6, 0.55, -0.2],
+    anchor: [0.0, 3.0, -5.5],
     tagline: "High-load steering head bearing with superior shock absorption for off-road",
     highlights: ["Highest resilience — absorbs more shocks", "Higher jumps on off-road drive", "Higher load rating"],
     features: [
@@ -613,7 +614,7 @@ const components = [
     label: "48V E-Motor",
     category: "Electrification",
     model: "e_motor.glb",
-    anchor: [0.5, 0.6, -0.5],
+    anchor: [1.5, -1.5, 4.0],
     tagline: "High-performance, cost-optimized 48V electric motor for light 2/3-wheelers",
     highlights: ["Scalable platform in power and torque", "Tailored for electric & hybrid 2/3-wheelers", "Robust distributed winding technology"],
     features: [
@@ -644,7 +645,7 @@ const components = [
     label: "Electric Drive Control Unit (eDCU)",
     category: "Electrification",
     model: "edcu.glb",
-    anchor: [0.55, 0.65, -0.55],
+    anchor: [1.5, -0.5, 4.5],
     tagline: "All-in-one smart controller merging motor and vehicle control for electric 2-wheelers",
     highlights: ["Scalable platform for wide range of eMotor requirements", "Tailored for electric & hybrid 2/3-wheelers", "Built on Schaeffler automotive expertise"],
     features: [
@@ -674,7 +675,7 @@ const components = [
     label: "Inductive Rotor Position Sensor (iRPS)",
     category: "Electrification",
     model: "irps.glb",
-    anchor: [0.6, 0.7, -0.6],
+    anchor: [0.5, -1.5, 4.0],
     tagline: "Compact magnet-free inductive sensor for high-speed e-motor positioning",
     highlights: ["Magnet-free — no rare earth elements", "Functional safety up to ASIL-D", "Active analog signal — no demodulation needed"],
     features: [
@@ -707,7 +708,7 @@ const components = [
     label: "Battery Management System (BMS)",
     category: "Electrification",
     model: "bms.glb",
-    anchor: [0.65, 0.75, -0.65],
+    anchor: [0.0, 3.0, 4.5],
     tagline: "Smart all-in-one 48V BMS merging battery management for small to medium electric 2/3-wheelers",
     highlights: ["High functionality integration", "Functional safety & cybersecurity state of the art", "Leveraging Schaeffler passenger car platforms"],
     features: [
