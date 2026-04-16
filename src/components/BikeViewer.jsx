@@ -54,6 +54,16 @@ export default function BikeViewer({ groupRef }) {
     const bbox = new THREE.Box3().setFromObject(scene)
     const bikeCenter = new THREE.Vector3()
     bbox.getCenter(bikeCenter)
+    
+    scene.traverse(child => {
+      if (!child.isMesh) return;
+      
+      // Temporary log to see exactly how Three.js formats the Fuel Injector string
+      if (child.name.includes("049")) {
+         console.log("TRUE THREE.JS NAME FOR 049 IS:", child.name);
+      }
+      // ...
+    })
 
     // ── DEV: Print the bike's bounding box IN GROUP-LOCAL space ───────────
     // Since the group has only uniform scale + translation (no rotation),
@@ -166,7 +176,23 @@ export default function BikeViewer({ groupRef }) {
   function applyEmissive(mesh, hexColor, intensity) {
     if (!mesh) return
     ensureOwnMaterial(mesh)
-    const set = mat => { mat.emissive.set(hexColor); mat.emissiveIntensity = intensity }
+    
+    const set = mat => {
+      // Not all materials (e.g. MeshBasicMaterial) have an emissive property
+      if (mat.emissive) {
+         mat.emissive.set(hexColor); 
+         mat.emissiveIntensity = intensity;
+      }
+      // Backup for materials that ignore emissive: artificially store and change their base color
+      if (mat.color && !mat.userData.origColorSaved) {
+         mat.userData.origColor = mat.color.getHex()
+         mat.userData.origColorSaved = true
+      }
+      if (mat.color) {
+         mat.color.set(hexColor)
+      }
+    }
+    
     if (Array.isArray(mesh.material)) mesh.material.forEach(set)
     else set(mesh.material)
     highlightedRef.current.add(mesh)
@@ -174,7 +200,15 @@ export default function BikeViewer({ groupRef }) {
 
   function clearAllHighlights() {
     for (const mesh of highlightedRef.current) {
-      const clear = mat => { mat.emissive.set(0, 0, 0); mat.emissiveIntensity = 0 }
+      const clear = mat => { 
+        if (mat.emissive) {
+          mat.emissive.set(0, 0, 0); 
+          mat.emissiveIntensity = 0;
+        }
+        if (mat.color && mat.userData.origColorSaved) {
+          mat.color.setHex(mat.userData.origColor)
+        }
+      }
       if (Array.isArray(mesh.material)) mesh.material.forEach(clear)
       else clear(mesh.material)
     }
