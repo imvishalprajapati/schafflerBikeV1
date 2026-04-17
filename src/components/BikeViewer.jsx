@@ -119,20 +119,51 @@ export default function BikeViewer({ groupRef }) {
 
     // Pre-map the components that have explicitly assigned targetMeshes
     assignedMeshes = 0
+    
+    // DEV: Automatically calculate exact anchor positions and print them to console
+    if (import.meta.env.DEV) {
+       console.groupCollapsed('%c[BikeViewer] AUTO-CALCULATED ANCHORS', 'color:#00ff00;font-weight:bold');
+       console.log('Copy these exact values into components.js replacing the [0,0,0] anchors:');
+    }
+
     components.forEach(comp => {
       if (comp.targetMeshes && comp.targetMeshes.length > 0) {
+        
+        let compBBox = new THREE.Box3();
+        let hasMeshes = false;
+
         scene.traverse(child => {
-          if (child.isMesh && comp.targetMeshes.includes(child.name)) {
-            child.userData.componentId = comp.id
-            assignedMeshes++
+          if (child.isMesh) {
+             const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
+             const isMatch = comp.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
+             
+             if (isMatch) {
+                child.userData.componentId = comp.id
+                assignedMeshes++
+                
+                let mbox = new THREE.Box3().setFromObject(child);
+                compBBox.expandByPoint(mbox.min);
+                compBBox.expandByPoint(mbox.max);
+                hasMeshes = true;
+             }
           }
         })
+        
+        // DEV: Print calculated anchor
+        if (import.meta.env.DEV && hasMeshes && groupRef.current) {
+            let centerWorld = new THREE.Vector3();
+            compBBox.getCenter(centerWorld);
+            // Convert to group-local space
+            let centerLocal = groupRef.current.worldToLocal(centerWorld);
+            
+            console.log(`%c${comp.id}:`, 'color:#00b050', `anchor: [${centerLocal.x.toFixed(3)}, ${centerLocal.y.toFixed(3)}, ${centerLocal.z.toFixed(3)}]`);
+        }
       }
     })
 
-    // Dev summary
     if (import.meta.env.DEV) {
-      console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
+       console.groupEnd();
+       console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
     }
   }, [scene, groupRef])
 
@@ -215,21 +246,23 @@ export default function BikeViewer({ groupRef }) {
     highlightedRef.current.clear()
   }
 
+  // Pull selected state to keep it highlighted
+  const selectedComponentId = useShowroomStore(s => s.selectedComponent)
+
   // Monitor side panel hover state (hoveredUiMeshId) and highlight specific targetMeshes
   useEffect(() => {
-    // We only react if activeCompRef is different, preventing loops between 3D and UI hovers
-    if (hoveredUiMeshId === activeCompRef.current) return
-
+    // If no hover, but we have a selection, keep selection highlighted
     clearAllHighlights()
-    activeCompRef.current = hoveredUiMeshId || null
+    const targetCompId = hoveredUiMeshId || selectedComponentId
 
-    if (hoveredUiMeshId) {
-      const partsDef = components.find(c => c.id === hoveredUiMeshId)
-      // Check if user has explicitly mapped this component to specific meshes
+    if (targetCompId) {
+      const partsDef = components.find(c => c.id === targetCompId)
       if (partsDef && partsDef.targetMeshes && scene) {
         scene.traverse(child => {
-          if (child.isMesh && partsDef.targetMeshes.includes(child.name)) {
-            applyEmissive(child, '#00893D', 1.1)
+          if (child.isMesh) {
+             const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
+             const isMatch = partsDef.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
+             if (isMatch) applyEmissive(child, '#00893D', 1.1)
           }
         })
         invalidate()
@@ -237,7 +270,8 @@ export default function BikeViewer({ groupRef }) {
     } else {
       invalidate()
     }
-  }, [hoveredUiMeshId, scene, invalidate])
+  }, [hoveredUiMeshId, selectedComponentId, scene, invalidate])
+
 
   // ── 4. Pointer handlers ──────────────────────────────────────────────────
   const handlePointerOver = (e) => {
@@ -246,33 +280,15 @@ export default function BikeViewer({ groupRef }) {
     if (!obj.isMesh) return
 
     lastEnteredMeshRef.current = obj
-
-    clearAllHighlights()
-
+    
+    // We update the transient hover state. The useEffect above will handle highlighting!
     const compId = obj.userData.componentId
-
-    if (compId) {
-      // Highlight ALL targetMeshes for this explicitly mapped component
-      const partsDef = components.find(c => c.id === compId)
-      if (partsDef && partsDef.targetMeshes && scene) {
-        scene.traverse(child => {
-          if (child.isMesh && partsDef.targetMeshes.includes(child.name)) {
-            applyEmissive(child, '#00893D', 1.1)
-          }
-        })
-      }
-    } else {
-      // Unmapped mesh: Highlight exactly the single mesh being hovered
-      applyEmissive(obj, '#00893D', 1.1)
-    }
 
     if (compId !== activeCompRef.current) {
       activeCompRef.current = compId || null
       setHoveredMeshId(compId || null)
     }
     
-    invalidate()
-
     if (import.meta.env.DEV && compId) {
       const entry = ANCHOR_ENTRIES.find(a => a.id === compId)
       console.log(`[Hover] mesh: "${obj.name}" → comp: "${entry?.label ?? compId}"`)
@@ -283,12 +299,10 @@ export default function BikeViewer({ groupRef }) {
     // Only clear when the pointer leaves the scene entirely.
     if (lastEnteredMeshRef.current !== e.object) return
 
-    clearAllHighlights()
     if (activeCompRef.current !== null) {
       activeCompRef.current = null
       setHoveredMeshId(null)
     }
-    invalidate()
   }
 
   const handleClick = (e) => {
@@ -303,9 +317,9 @@ export default function BikeViewer({ groupRef }) {
       return
     }
 
-    // Normal click → navigate
+    // Normal click → Select component (don't navigate yet)
     const compId = obj?.userData?.componentId
-    if (compId) navigate(`/component/${compId}`)
+    if (compId) useShowroomStore.getState().setSelectedComponent(compId)
   }
 
   // ── 5. JSX ───────────────────────────────────────────────────────────────

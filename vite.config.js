@@ -11,6 +11,9 @@ export default defineConfig(({ command }) => ({
     outDir: 'dist',
     assetsInlineLimit: 0,  // never inline models/textures
   },
+  optimizeDeps: {
+    include: ['gsap', 'react-router-dom', '@react-three/fiber', '@react-three/drei', 'three']
+  },
   server: {
     port: 5173,
     headers: {

@@ -70,9 +70,10 @@ const components = [
   {
     id: "m4rek",
     label: "M4REK Mechatronic",
+    targetMeshes: ["final bike mod.068"],
     category: "Engine Control Units",
     model: "Parts/M4REK.glb",
-    anchor: [1.0, 3.5, 1.0],
+    anchor: [-0.023, 0.036, 0.263],
     tagline: "ECU with embedded Electronic Throttle Control for mid-range motorcycles",
     highlights: ["Engine Control Unit with integrated Electronic Throttle Control", "Very compact size", "Easy mounting"],
     features: [
@@ -107,7 +108,7 @@ const components = [
     targetMeshes: ["final_bike_mod049"],
     category: "Engine",
     model: "Parts/Fuel Injector.glb",
-    anchor: [0.0, 1.1, 0.4],
+    anchor: [-0.056, -0.265, 0.845],
     tagline: "Port Fuel Injector with unique flexibility in body, tip and spray configurations",
     highlights: ["Proven durability performance", "Improved opening and closing performance", "E-fuel compatible design"],
     features: [
@@ -138,9 +139,10 @@ const components = [
   {
     id: "knock_sensor",
     label: "Knock Sensor",
+    targetMeshes: ["final bike mod.046"],
     category: "Engine",
     model: "Parts/Knock sensor.glb",
-    anchor: [-1.5, -1.0, 0.5],
+    anchor: [0.644, 1.048, 0.889],
     tagline: "Measures structural vibrations to continuously adjust ignition parameters",
     highlights: ["Worldwide market leader since 1990", ">15 cable and integrated connector versions", "Enabler for emission reduction"],
     features: [
@@ -171,9 +173,10 @@ const components = [
   {
     id: "pressure_sensor",
     label: "Pressure Sensor (MAP + Temperature)",
+    targetMeshes: ["imagetostl_mesh9", "imagetostl_mesh7.001", "imagetostl_mesh6.001", "imagetostl_mesh4.001", "imagetostl_mesh3.001", "imagetostl_mesh2.002", "imagetostl_mesh12", "imagetostl_mesh11"],
     category: "Engine",
     model: "Parts/pressure sensor.glb",
-    anchor: [0.0, 2.0, -2.5],
+    anchor: [0.358, -0.079, 0.665],
     tagline: "Small and robust pressure sensor with integrated temperature sensing for manifolds",
     highlights: ["Flexible transfer function calibration", "High accuracy and temperature stability", "Compatible with toughest environments"],
     features: [
@@ -201,9 +204,10 @@ const components = [
   {
     id: "flex_fuel_sensor",
     label: "Flex Fuel Sensor",
+    targetMeshes: ["final bike mod.045"],
     category: "Engine",
     model: "Parts/Flex Fuel sensore.glb",
-    anchor: [-1.0, -2.0, 2.5],
+    anchor: [0.631, -1.724, 0.182],
     tagline: "Detects ethanol concentration in gasoline/ethanol fuel mixture before engine injection",
     highlights: ["Worldwide market leader since 1998", "Highly accurate ethanol prediction", "Signal output within 250 ms after start-up"],
     features: [
@@ -233,9 +237,10 @@ const components = [
   {
     id: "hydraulic_chain_tensioner",
     label: "Hydraulic Chain Tensioner",
+    targetMeshes: ["final bike mod.067"],
     category: "Engine",
     model: "Parts/Hydrolic Chain tenssioner.glb",
-    anchor: [0.5, 2.0, 1.5],
+    anchor: [0.452, 0.782, 0.794],
     tagline: "Cost-effective hydraulic eco chain tensioner reducing friction and fuel consumption",
     highlights: ["Outstanding NVH behavior", "Reduced fuel consumption", "Robust and cost-effective design"],
     features: [
@@ -258,10 +263,11 @@ const components = [
   {
     id: "cam_roller",
     label: "Cam Roller & BZ Pin",
+    targetMeshes: ["final bike mod.064"],
     category: "Engine",
     model: "Parts/Rocket arm, Cam Roller, BZ Pin .glb",
     hasExplodedView: true,
-    anchor: [0.0, 1.5, 0.5],
+    anchor: [0.024, 1.421, 0.054],
     tagline: "Wide range of outer rings, needles and pins for various motorcycle applications",
     highlights: ["Easy to assemble with rocker arm", "Optimized friction", "Suitable for engine speed up to 12,000 RPM"],
     features: [
@@ -283,9 +289,10 @@ const components = [
   {
     id: "crankpin_kzk",
     label: "Crankpin KZK & Pistonpin KBK",
+    targetMeshes: ["final bike mod.059"],
     category: "Engine",
     model: "Parts/Crankpin KZK.glb",
-    anchor: [0.0, -1.5, 0.0],
+    anchor: [0.585, 0.965, 2.242],
     tagline: "Needle bearings at the heart of each small combustion engine",
     highlights: ["High resistance against centrifugal forces", "Improved lubrication access", "Easy assembly"],
     features: [
@@ -312,10 +319,11 @@ const components = [
   {
     id: "one_way_clutch",
     label: "Starter One Way Clutch",
+    targetMeshes: ["final bike mod.041"],
     category: "Engine",
     model: "Parts/One way Clutch.glb",
     hasExplodedView: true,
-    anchor: [2.0, -2.0, 1.5],
+    anchor: [0.771, 0.950, 2.246],
     tagline: "Roller clutch for electric starter drives with integrated torque limitation",
     highlights: ["Easy to mount", "Low space requirements and reduced weight", "Suitable for high power densities"],
     features: [
@@ -338,9 +346,10 @@ const components = [
   {
     id: "drawn_cup_starter",
     label: "Drawn Cup Needle Roller Bearing (Starter/Primary Drive)",
+    targetMeshes: ["final bike mod.024"],
     category: "Engine",
     model: "Parts/Drawn Cup NRB.glb",
-    anchor: [2.0, -2.5, 2.5],
+    anchor: [-0.068, -0.710, 2.086],
     tagline: "Deep drawing technology providing significant cost and precision advantages",
     highlights: ["High load rating capacity", "Weight saving potential", "Cost-efficient deep drawing technology"],
     features: [
@@ -368,9 +377,10 @@ const components = [
   {
     id: "cylindrical_roller",
     label: "Cylindrical Roller Bearing with Sheet Metal Cage",
+    targetMeshes: ["final bike mod.050", "final bike mod.414", "final bike mod.418", "final bike mod.499", "final bike mod.500", "final bike mod.502", "final bike mod.503", "final bike mod.504", "final bike mod.516", "final bike mod.517", "final bike mod.527", "final bike mod.528", "final bike mod.1793", "final bike mod.1890"],
     category: "Engine",
     model: "Parts/Cylindrical Roller with sheet metal cage  .glb",
-    anchor: [-2.0, -2.5, 0.5],
+    anchor: [-0.137, -1.506, 0.342],
     tagline: "Non-separable self-retaining bearing with higher load rating and reduced friction",
     highlights: ["Higher stiffness", "Controlled rolling elements", "Non-separable — easy to mount"],
     features: [
@@ -456,9 +466,10 @@ const components = [
   {
     id: "deep_groove_ball",
     label: "Deep Groove Ball Bearings",
+    targetMeshes: ["final bike mod.019"],
     category: "Transmission",
     model: "Parts/Deep Groove Ball Bearings.glb",
-    anchor: [0.0, -2.5, 2.5],
+    anchor: [-0.295, -0.605, 1.529],
     tagline: "Versatile ball bearing for engine and gearbox with reduced friction",
     highlights: ["Higher mileage", "Reduced friction", "Higher lifetime with special heat treatment"],
     features: [
@@ -487,9 +498,10 @@ const components = [
   {
     id: "drawn_cup_swing",
     label: "Drawn Cup Needle Roller Bearing (Swing Arm) HK/HNH",
+    targetMeshes: ["final bike mod.024"],
     category: "Chassis",
     model: "Parts/Drawn Cup NRB.glb",
-    anchor: [0.0, -2.5, 4.5],
+    anchor: [-0.068, -0.710, 2.086],
     tagline: "High load capacity needle bearing for swing arm suspension applications",
     highlights: ["High load rating capacity", "Weight saving potential", "Cost-efficient deep drawing technology"],
     features: [
@@ -515,9 +527,10 @@ const components = [
   {
     id: "ball_bearing_abs",
     label: "Ball Bearing with ABS Encoder Sealing",
+    targetMeshes: ["imagetostl_mesh1"],
     category: "Chassis",
     model: "Parts/Ball Bearing with ABS tonner.glb",
-    anchor: [0.0, -4.0, 7.5],
+    anchor: [0.248, -2.785, 6.332],
     tagline: "Wheel bearing with integrated encoder sealing for ABS systems",
     highlights: ["Higher accuracy", "Controlled braking", "Go Digital — embedded encoder for ABS"],
     features: [
@@ -576,9 +589,10 @@ const components = [
   {
     id: "steering_head_trb",
     label: "Steering Head Taper Roller Bearing (TRB)",
+    targetMeshes: ["final bike mod.002"],
     category: "Chassis",
     model: "Parts/Steering Head TRB.glb",
-    anchor: [0.0, 3.0, -5.5],
+    anchor: [-0.662, 4.235, -1.016],
     tagline: "High-load steering head bearing with superior shock absorption for off-road",
     highlights: ["Highest resilience — absorbs more shocks", "Higher jumps on off-road drive", "Higher load rating"],
     features: [

@@ -113,7 +113,7 @@ export default function Home() {
             <pointLight position={[0, 4, 0]} intensity={0.6} />
 
             {/* Bike scene */}
-            <Bounds fit clip margin={3.5}>
+            <Bounds fit clip margin={1.2}>
               <Bvh firstHitOnly>
                 <group ref={bikeGroupRef} position={[0, -0.8, 0]} scale={0.5}>
                   <BikeViewer groupRef={bikeGroupRef} />
@@ -177,10 +177,10 @@ export default function Home() {
                 </div>
 
                 {comps.map(comp => {
-                  // Active when sidebar-selected OR when 3D mesh hover resolves to this comp
                   const isActive =
                     hoveredComponent === comp.id ||
-                    hoveredMeshId === comp.id
+                    hoveredMeshId === comp.id ||
+                    useShowroomStore.getState().selectedComponent === comp.id
 
                   return (
                     <button
@@ -190,7 +190,7 @@ export default function Home() {
                       style={{ '--cat-color': CAT_COLOR[comp.category] || '#00893D' }}
                       onMouseEnter={() => setHoveredComponent(comp.id)}
                       onMouseLeave={() => setHoveredComponent(null)}
-                      onClick={() => navigate(`/component/${comp.id}`)}
+                      onClick={() => useShowroomStore.getState().setSelectedComponent(comp.id)}
                     >
                       <span className="comp-btn-label">{comp.label}</span>
                       {isActive && <span className="comp-btn-arrow">→</span>}

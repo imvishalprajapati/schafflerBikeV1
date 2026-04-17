@@ -14,13 +14,18 @@ const catColor = {
 
 function HotspotPin({ component }) {
   const navigate = useNavigate()
-  const { hoveredComponent, hoveredMeshId, setHoveredComponent } = useShowroomStore()
-  // Pin is active if selected via sidebar OR if the 3D mesh hover resolved to this component
-  const isHovered = hoveredComponent === component.id || hoveredMeshId === component.id
+  const { hoveredComponent, hoveredMeshId, selectedComponent, setHoveredComponent } = useShowroomStore()
+  // Pin is active if selected via sidebar, 3D mesh hover, OR if it's the currently selected component
+  const isHovered = hoveredComponent === component.id || hoveredMeshId === component.id || selectedComponent === component.id
   const color = catColor[component.category] || '#00893D'
+  
+  // Only use the anchor if the component successfully mapped to a target mesh,
+  // otherwise fallback to the bike center [0,0,0] so it doesn't float in the air.
+  const hasTarget = component.targetMeshes && component.targetMeshes.length > 0;
+  const pinPosition = hasTarget ? component.anchor : [0, 0.5, 0];
 
   return (
-    <Html position={component.anchor} center zIndexRange={[10, 20]}>
+    <Html position={pinPosition} center zIndexRange={[10, 20]}>
       <div
         className={`hotspot-pin ${isHovered ? 'hovered' : ''}`}
         onMouseEnter={() => setHoveredComponent(component.id)}
@@ -44,10 +49,10 @@ function HotspotPin({ component }) {
 }
 
 export default function Hotspots() {
-  const { hoveredComponent, hoveredMeshId } = useShowroomStore()
+  const { hoveredComponent, hoveredMeshId, selectedComponent } = useShowroomStore()
 
-  // Show the hotspot pin for whichever component is active (sidebar or 3D hover)
-  const activeId = hoveredComponent || hoveredMeshId
+  // Show the hotspot pin for whichever component is active (sidebar or 3D hover or selected)
+  const activeId = hoveredComponent || hoveredMeshId || selectedComponent
 
   const filtered = activeId
     ? components.filter(comp => comp.id === activeId)

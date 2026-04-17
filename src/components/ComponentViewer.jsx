@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment, useGLTF, Stage, Bounds, PerformanceMonitor } from '@react-three/drei'
+import { OrbitControls, Environment, useGLTF, Stage, Bounds, PerformanceMonitor, Center } from '@react-three/drei'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
 import LoadingScreen from './LoadingScreen.jsx'
 import gsap from 'gsap'
@@ -83,15 +83,17 @@ export default function ComponentViewer({ componentId, modelFile, color = '#0089
         <pointLight position={[0, 4, 2]} intensity={0.8} color={color} />
 
         {/* Model or fallback with Bounds to ensure fit */}
-        <Bounds fit clip observe margin={1.5}>
+        <Bounds fit clip observe margin={1.2}>
           {!modelError ? (
-            <ErrorBoundary fallback={<FallbackBox color={color} />} onError={() => setModelError(true)}>
-              <Suspense fallback={<FallbackBox color={color} />}>
-                <ComponentModel modelPath={modelPath} scrollProgress={scrollProgress} />
+            <ErrorBoundary fallback={<Center><FallbackBox color={color} /></Center>} onError={() => setModelError(true)}>
+              <Suspense fallback={<Center><FallbackBox color={color} /></Center>}>
+                <Center>
+                  <ComponentModel modelPath={modelPath} scrollProgress={scrollProgress} />
+                </Center>
               </Suspense>
             </ErrorBoundary>
           ) : (
-            <FallbackBox color={color} />
+            <Center><FallbackBox color={color} /></Center>
           )}
         </Bounds>
 
