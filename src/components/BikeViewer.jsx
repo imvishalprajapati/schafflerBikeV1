@@ -25,7 +25,7 @@ const DEV_PICK_MODE = import.meta.env.DEV
 
 // ── BikeViewer ───────────────────────────────────────────────────────────
 export default function BikeViewer({ groupRef }) {
-  const { scene } = useGLTF('/models/Bike_optimized.glb')
+  const { scene } = useGLTF('/models/Grops Bikes1.glb')
   const { invalidate } = useThree()
   const navigate = useNavigate()
 
@@ -54,13 +54,13 @@ export default function BikeViewer({ groupRef }) {
     const bbox = new THREE.Box3().setFromObject(scene)
     const bikeCenter = new THREE.Vector3()
     bbox.getCenter(bikeCenter)
-    
+
     scene.traverse(child => {
       if (!child.isMesh) return;
-      
+
       // Temporary log to see exactly how Three.js formats the Fuel Injector string
       if (child.name.includes("049")) {
-         console.log("TRUE THREE.JS NAME FOR 049 IS:", child.name);
+        console.log("TRUE THREE.JS NAME FOR 049 IS:", child.name);
       }
       // ...
     })
@@ -119,51 +119,54 @@ export default function BikeViewer({ groupRef }) {
 
     // Pre-map the components that have explicitly assigned targetMeshes
     assignedMeshes = 0
-    
+
     // DEV: Automatically calculate exact anchor positions and print them to console
     if (import.meta.env.DEV) {
-       console.groupCollapsed('%c[BikeViewer] AUTO-CALCULATED ANCHORS', 'color:#00ff00;font-weight:bold');
-       console.log('Copy these exact values into components.js replacing the [0,0,0] anchors:');
+      console.groupCollapsed('%c[BikeViewer] AUTO-CALCULATED ANCHORS', 'color:#00ff00;font-weight:bold');
+      console.log('Copy these exact values into components.js replacing the [0,0,0] anchors:');
     }
 
     components.forEach(comp => {
       if (comp.targetMeshes && comp.targetMeshes.length > 0) {
-        
+
         let compBBox = new THREE.Box3();
         let hasMeshes = false;
 
         scene.traverse(child => {
           if (child.isMesh) {
-             const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
-             const isMatch = comp.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
-             
-             if (isMatch) {
-                child.userData.componentId = comp.id
-                assignedMeshes++
-                
-                let mbox = new THREE.Box3().setFromObject(child);
-                compBBox.expandByPoint(mbox.min);
-                compBBox.expandByPoint(mbox.max);
-                hasMeshes = true;
-             }
+            const cleanChildName = child.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
+            const isMatch = comp.targetMeshes.some(tm => {
+              const cleanTM = tm.replace(/[^a-z0-9]/gi, '').toLowerCase();
+              return cleanChildName === cleanTM || cleanChildName.startsWith(cleanTM);
+            });
+
+            if (isMatch) {
+              child.userData.componentId = comp.id
+              assignedMeshes++
+
+              let mbox = new THREE.Box3().setFromObject(child);
+              compBBox.expandByPoint(mbox.min);
+              compBBox.expandByPoint(mbox.max);
+              hasMeshes = true;
+            }
           }
         })
-        
+
         // DEV: Print calculated anchor
         if (import.meta.env.DEV && hasMeshes && groupRef.current) {
-            let centerWorld = new THREE.Vector3();
-            compBBox.getCenter(centerWorld);
-            // Convert to group-local space
-            let centerLocal = groupRef.current.worldToLocal(centerWorld);
-            
-            console.log(`%c${comp.id}:`, 'color:#00b050', `anchor: [${centerLocal.x.toFixed(3)}, ${centerLocal.y.toFixed(3)}, ${centerLocal.z.toFixed(3)}]`);
+          let centerWorld = new THREE.Vector3();
+          compBBox.getCenter(centerWorld);
+          // Convert to group-local space
+          let centerLocal = groupRef.current.worldToLocal(centerWorld);
+
+          console.log(`%c${comp.id}:`, 'color:#00b050', `anchor: [${centerLocal.x.toFixed(3)}, ${centerLocal.y.toFixed(3)}, ${centerLocal.z.toFixed(3)}]`);
         }
       }
     })
 
     if (import.meta.env.DEV) {
-       console.groupEnd();
-       console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
+      console.groupEnd();
+      console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
     }
   }, [scene, groupRef])
 
@@ -179,7 +182,7 @@ export default function BikeViewer({ groupRef }) {
 
       scene?.traverse(child => {
         if (!child.isMesh || !child.userData.origPos) return
-        const { origPos, explodeDir, explodeMag } = child.userData
+        const { origPos, explodeDir, explodeMag = 1 } = child.userData
         child.position.set(
           origPos.x + explodeDir.x * explodeMag * EXPLODE_SCALE * t,
           origPos.y + explodeDir.y * explodeMag * EXPLODE_SCALE * t,
@@ -207,23 +210,23 @@ export default function BikeViewer({ groupRef }) {
   function applyEmissive(mesh, hexColor, intensity) {
     if (!mesh) return
     ensureOwnMaterial(mesh)
-    
+
     const set = mat => {
       // Not all materials (e.g. MeshBasicMaterial) have an emissive property
       if (mat.emissive) {
-         mat.emissive.set(hexColor); 
-         mat.emissiveIntensity = intensity;
+        mat.emissive.set(hexColor);
+        mat.emissiveIntensity = intensity;
       }
       // Backup for materials that ignore emissive: artificially store and change their base color
       if (mat.color && !mat.userData.origColorSaved) {
-         mat.userData.origColor = mat.color.getHex()
-         mat.userData.origColorSaved = true
+        mat.userData.origColor = mat.color.getHex()
+        mat.userData.origColorSaved = true
       }
       if (mat.color) {
-         mat.color.set(hexColor)
+        mat.color.set(hexColor)
       }
     }
-    
+
     if (Array.isArray(mesh.material)) mesh.material.forEach(set)
     else set(mesh.material)
     highlightedRef.current.add(mesh)
@@ -231,9 +234,9 @@ export default function BikeViewer({ groupRef }) {
 
   function clearAllHighlights() {
     for (const mesh of highlightedRef.current) {
-      const clear = mat => { 
+      const clear = mat => {
         if (mat.emissive) {
-          mat.emissive.set(0, 0, 0); 
+          mat.emissive.set(0, 0, 0);
           mat.emissiveIntensity = 0;
         }
         if (mat.color && mat.userData.origColorSaved) {
@@ -260,9 +263,9 @@ export default function BikeViewer({ groupRef }) {
       if (partsDef && partsDef.targetMeshes && scene) {
         scene.traverse(child => {
           if (child.isMesh) {
-             const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
-             const isMatch = partsDef.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
-             if (isMatch) applyEmissive(child, '#00893D', 1.1)
+            const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
+            const isMatch = partsDef.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
+            if (isMatch) applyEmissive(child, '#00893D', 1.1)
           }
         })
         invalidate()
@@ -280,7 +283,7 @@ export default function BikeViewer({ groupRef }) {
     if (!obj.isMesh) return
 
     lastEnteredMeshRef.current = obj
-    
+
     // We update the transient hover state. The useEffect above will handle highlighting!
     const compId = obj.userData.componentId
 
@@ -288,7 +291,7 @@ export default function BikeViewer({ groupRef }) {
       activeCompRef.current = compId || null
       setHoveredMeshId(compId || null)
     }
-    
+
     if (import.meta.env.DEV && compId) {
       const entry = ANCHOR_ENTRIES.find(a => a.id === compId)
       console.log(`[Hover] mesh: "${obj.name}" → comp: "${entry?.label ?? compId}"`)

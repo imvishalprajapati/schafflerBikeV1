@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
-import { Canvas } from '@react-three/fiber'
+import * as THREE from 'three'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Environment, useGLTF, Stage, Bounds, PerformanceMonitor, Center } from '@react-three/drei'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
 import LoadingScreen from './LoadingScreen.jsx'
@@ -8,40 +9,60 @@ import gsap from 'gsap'
 function ComponentModel({ modelPath, scrollProgress = 0 }) {
   const { scene } = useGLTF(modelPath, '/draco/')
   const sceneRef = useRef()
+  const localExplode = useRef(0)
 
-  // Generic explode logic: simply scale out or translate child meshes based on scroll
-  useEffect(() => {
-    if (!sceneRef.current) return
-    
-    // When real GLBs arrive, this will animate individual named parts from components.json
-    // For now, we apply a simple generic expansion of all direct children
-    sceneRef.current.children.forEach((child, i) => {
-      if (child.isMesh || child.isGroup) {
-        // compute a pseudo-random direction based on index
-        const dirX = Math.sin(i * 1.5) * 0.5
-        const dirY = Math.cos(i * 1.5) * 0.5
-        const dirZ = Math.sin(i * 0.8) * 0.5
-        
-        gsap.to(child.position, {
-          x: child.userData.origX !== undefined ? child.userData.origX + dirX * scrollProgress * 2 : dirX * scrollProgress * 2,
-          y: child.userData.origY !== undefined ? child.userData.origY + dirY * scrollProgress * 2 : dirY * scrollProgress * 2,
-          z: child.userData.origZ !== undefined ? child.userData.origZ + dirZ * scrollProgress * 2 : dirZ * scrollProgress * 2,
-          ease: 'power1.out',
-          duration: 0.3
-        })
-      }
-    })
-  }, [scrollProgress])
-
-  // Store original positions once
+  // Pre-calculate realistic explode directions
   useEffect(() => {
     if (!scene) return
-    scene.children.forEach(child => {
-      child.userData.origX = child.position.x
-      child.userData.origY = child.position.y
-      child.userData.origZ = child.position.z
+
+    // Calculate bounding box of the entire component scene
+    const bbox = new THREE.Box3().setFromObject(scene)
+    const center = new THREE.Vector3()
+    bbox.getCenter(center)
+
+    // Store original positions and compute directions for each mesh
+    scene.traverse(child => {
+      if (child.isMesh) {
+        // Only save origPos once
+        if (child.userData.origX === undefined) {
+          child.userData.origPos = child.position.clone()
+          child.userData.origX = child.position.x // Keep for compatibility if needed
+        }
+
+        const mbox = new THREE.Box3().setFromObject(child)
+        const mCenter = new THREE.Vector3()
+        mbox.getCenter(mCenter)
+
+        const dir = mCenter.clone().sub(center)
+        const len = dir.length()
+        child.userData.explodeDir = len > 0.001 ? dir.normalize() : new THREE.Vector3(0, 1, 0)
+      }
     })
   }, [scene])
+
+  // Sync scrollProgress to 3D positions in the mesh render loop
+  useFrame(() => {
+    if (!scene) return
+    
+    // Smoothly lerp towards the target scroll progress
+    localExplode.current += (scrollProgress - localExplode.current) * 0.1
+    const t = localExplode.current
+    
+    // How far parts travel (increased for visibility)
+    const EXPLODE_SCALE = 2.0
+
+    scene.traverse(child => {
+      if (child.isMesh && child.userData.origPos && child.userData.explodeDir) {
+        const { origPos, explodeDir } = child.userData
+        
+        child.position.set(
+          origPos.x + explodeDir.x * t * EXPLODE_SCALE,
+          origPos.y + explodeDir.y * t * EXPLODE_SCALE,
+          origPos.z + explodeDir.z * t * EXPLODE_SCALE
+        )
+      }
+    })
+  })
 
   return <primitive ref={sceneRef} object={scene} scale={1.2} position={[0, 0, 0]} />
 }
