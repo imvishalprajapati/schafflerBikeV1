@@ -30,6 +30,10 @@ export const useShowroomStore = create((set) => ({
   activeCategory: 'All',
   setActiveCategory: (cat) => set({ activeCategory: cat }),
 
+  // Dynamic hotspot anchors calculated from 3D meshes at runtime
+  dynamicAnchors: {},
+  setDynamicAnchors: (anchors) => set({ dynamicAnchors: anchors }),
+
   // Explode animation progress 0 (assembled) → 1 (fully exploded)
   // Written by ZoomWatcher every frame — read via getState() to avoid re-renders
   explodeProgress: 0,

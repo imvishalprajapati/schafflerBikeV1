@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import * as THREE from 'three'
 import { useShowroomStore } from '../store/useShowroomStore.js'
 import components from '../data/components.js'
+import { isMeshMatch } from '../utils/meshMapping.js'
 
 // ── Anchor table (group-local space, same as Hotspot positions) ───────────
 const ANCHOR_ENTRIES = components
@@ -126,47 +127,65 @@ export default function BikeViewer({ groupRef }) {
       console.log('Copy these exact values into components.js replacing the [0,0,0] anchors:');
     }
 
+    const setDynamicAnchors = useShowroomStore.getState().setDynamicAnchors
+    const calculatedAnchors = {}
+    const unmappedIds = []
+
     components.forEach(comp => {
-      if (comp.targetMeshes && comp.targetMeshes.length > 0) {
+      let compBBox = new THREE.Box3();
+      let hasMeshes = false;
 
-        let compBBox = new THREE.Box3();
-        let hasMeshes = false;
-
-        scene.traverse(child => {
-          if (child.isMesh) {
-            const cleanChildName = child.name.replace(/[^a-z0-9]/gi, '').toLowerCase();
-            const isMatch = comp.targetMeshes.some(tm => {
-              const cleanTM = tm.replace(/[^a-z0-9]/gi, '').toLowerCase();
-              return cleanChildName === cleanTM || cleanChildName.startsWith(cleanTM);
-            });
-
-            if (isMatch) {
-              child.userData.componentId = comp.id
-              assignedMeshes++
-
-              let mbox = new THREE.Box3().setFromObject(child);
-              compBBox.expandByPoint(mbox.min);
-              compBBox.expandByPoint(mbox.max);
-              hasMeshes = true;
+      scene.traverse(child => {
+        if (!child.isMesh) return
+        
+        let isMatch = isMeshMatch(child.name, comp.targetMeshes, comp.id);
+        
+        // Check if any parent group matches the component name
+        if (!isMatch) {
+          let parent = child.parent;
+          while (parent && (parent.isGroup || parent.isObject3D)) {
+            if (isMeshMatch(parent.name, comp.targetMeshes, comp.id)) {
+              isMatch = true;
+              break;
             }
+            parent = parent.parent;
           }
-        })
-
-        // DEV: Print calculated anchor
-        if (import.meta.env.DEV && hasMeshes && groupRef.current) {
-          let centerWorld = new THREE.Vector3();
-          compBBox.getCenter(centerWorld);
-          // Convert to group-local space
-          let centerLocal = groupRef.current.worldToLocal(centerWorld);
-
-          console.log(`%c${comp.id}:`, 'color:#00b050', `anchor: [${centerLocal.x.toFixed(3)}, ${centerLocal.y.toFixed(3)}, ${centerLocal.z.toFixed(3)}]`);
         }
+
+        if (isMatch) {
+          child.userData.componentId = comp.id
+          assignedMeshes++
+
+          let mbox = new THREE.Box3().setFromObject(child);
+          compBBox.expandByPoint(mbox.min);
+          compBBox.expandByPoint(mbox.max);
+          hasMeshes = true;
+        }
+      })
+
+      // Store calculated anchor
+      if (hasMeshes && groupRef.current) {
+        let centerWorld = new THREE.Vector3();
+        compBBox.getCenter(centerWorld);
+        let centerLocal = groupRef.current.worldToLocal(centerWorld);
+        calculatedAnchors[comp.id] = [centerLocal.x, centerLocal.y, centerLocal.z];
+      } else {
+        unmappedIds.push(comp.id)
       }
     })
 
+    // Push all calculated anchors to store at once
+    setDynamicAnchors(calculatedAnchors)
+
     if (import.meta.env.DEV) {
+      console.groupCollapsed('%c[BikeViewer] MAPPING REPORT', 'color:#00893D;font-weight:bold');
+      console.log(`Total Meshes: ${totalMeshes}`);
+      console.log(`Successfully mapped: ${components.length - unmappedIds.length} components`);
+      if (unmappedIds.length > 0) {
+        console.warn(`Failed to map ${unmappedIds.length} components:`, unmappedIds);
+        console.log('Suggestions: Update components.js targetMeshes with substrings of actual mesh names.');
+      }
       console.groupEnd();
-      console.log(`[BikeViewer] ${totalMeshes} meshes found. ${assignedMeshes} mapped explicitly via targetMeshes!`)
     }
   }, [scene, groupRef])
 
@@ -252,24 +271,19 @@ export default function BikeViewer({ groupRef }) {
   // Pull selected state to keep it highlighted
   const selectedComponentId = useShowroomStore(s => s.selectedComponent)
 
-  // Monitor side panel hover state (hoveredUiMeshId) and highlight specific targetMeshes
+  // Monitor side panel hover state (hoveredUiMeshId) and highlight all meshes belonging to that component
   useEffect(() => {
     // If no hover, but we have a selection, keep selection highlighted
     clearAllHighlights()
     const targetCompId = hoveredUiMeshId || selectedComponentId
 
-    if (targetCompId) {
-      const partsDef = components.find(c => c.id === targetCompId)
-      if (partsDef && partsDef.targetMeshes && scene) {
-        scene.traverse(child => {
-          if (child.isMesh) {
-            const cleanChildName = child.name.replace(/[\s_.]/g, '').toLowerCase();
-            const isMatch = partsDef.targetMeshes.some(tm => tm.replace(/[\s_.]/g, '').toLowerCase() === cleanChildName);
-            if (isMatch) applyEmissive(child, '#00893D', 1.1)
-          }
-        })
-        invalidate()
-      }
+    if (targetCompId && scene) {
+      scene.traverse(child => {
+        if (child.isMesh && child.userData.componentId === targetCompId) {
+          applyEmissive(child, '#00893D', 1.1)
+        }
+      })
+      invalidate()
     } else {
       invalidate()
     }

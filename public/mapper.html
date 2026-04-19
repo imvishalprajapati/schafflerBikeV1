@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model Mapper</title>
+</head>
+<body>
+  <h1>Geometry Mapper</h1>
+  <div id="status">Loading...</div>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/DRACOLoader.js';
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('/draco/');
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+
+    async function loadModel(path) {
+      return new Promise((resolve, reject) => {
+        loader.load(path, resolve, undefined, reject);
+      });
+    }
+
+    function getMeshStats(scene) {
+      const stats = [];
+      scene.traverse(child => {
+        if (child.isMesh) {
+          child.geometry.computeBoundingBox();
+          const bbox = child.geometry.boundingBox;
+          const size = new THREE.Vector3();
+          bbox.getSize(size);
+          // Scale it by the object's global scale
+          const worldScale = new THREE.Vector3();
+          child.getWorldScale(worldScale);
+          size.multiply(worldScale);
+
+          const verts = child.geometry.attributes.position ? child.geometry.attributes.position.count : 0;
+          stats.push({ name: child.name, size, verts, mesh: child });
+        }
+      });
+      return stats;
+    }
+
+    async function run() {
+      try {
+        document.getElementById('status').innerText = 'Loading main bike...';
+        const bikeGlb = await loadModel('/models/Grops Bikes1.glb');
+        const bikeStats = getMeshStats(bikeGlb.scene);
+        console.log(`Loaded bike, found ${bikeStats.length} meshes.`);
+
+        const parts = [
+          { id: 'E-Motor', path: '/models/Parts/E-Motor.glb' },
+          { id: 'EDCU', path: '/models/Parts/EDCU.glb' },
+          { id: 'IRPS', path: '/models/Parts/IRPS.glb' },
+          { id: 'BMS', path: '/models/Parts/BMS.glb' }
+        ];
+
+        const mappings = {};
+
+        for (const part of parts) {
+          document.getElementById('status').innerText = `Loading ${part.id}...`;
+          const partGlb = await loadModel(part.path);
+          const pStats = getMeshStats(partGlb.scene);
+          
+          let matches = [];
+          for (const ps of pStats) {
+            if (ps.verts < 10) continue; // ignore tiny geometry
+            // Find matches in bike stats
+            const match = bikeStats.find(bs => {
+              // Compare vertex count first (most distinctive)
+              // Note: exact vertex count matching works best. Let's allow a small delta just in case, but usually it's exact.
+              if (Math.abs(bs.verts - ps.verts) > 0) return false;
+              
+              // Compare bounding box size (volume/dims)
+              const dx = Math.abs(bs.size.x - ps.size.x);
+              const dy = Math.abs(bs.size.y - ps.size.y);
+              const dz = Math.abs(bs.size.z - ps.size.z);
+              if (dx < 0.001 && dy < 0.001 && dz < 0.001) return true;
+
+              return false;
+            });
+
+            if (match) {
+              matches.push(match.name);
+            }
+          }
+          mappings[part.id] = [...new Set(matches)]; // unique
+          console.log(`MAPPED ${part.id} ->`, mappings[part.id]);
+        }
+        
+        document.getElementById('status').innerText = 'Done mapping! See console.';
+        document.title = "Done Mapping";
+      } catch (err) {
+        document.getElementById('status').innerText = 'Error: ' + err.message;
+        console.error(err);
+      }
+    }
+
+    run();
+  </script>
+</body>
+</html>

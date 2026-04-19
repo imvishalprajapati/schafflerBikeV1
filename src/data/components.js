@@ -379,7 +379,7 @@ const components = [
   {
     id: "cylindrical_roller",
     label: "Cylindrical Roller Bearing with Sheet Metal Cage",
-    targetMeshes: ["Cylindrical Roller with sheet metal cage  "],
+    targetMeshes: ["Cylindrical Roller with sheet metal cage"],
     category: "Engine",
     model: "Parts/Cylindrical Roller with sheet metal cage  .glb",
     anchor: [-0.137, -0.342, -1.506],

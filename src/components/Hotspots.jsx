@@ -14,15 +14,19 @@ const catColor = {
 
 function HotspotPin({ component }) {
   const navigate = useNavigate()
-  const { hoveredComponent, hoveredMeshId, selectedComponent, setHoveredComponent } = useShowroomStore()
+  const { hoveredComponent, hoveredMeshId, selectedComponent, setHoveredComponent, dynamicAnchors } = useShowroomStore()
   // Pin is active if selected via sidebar, 3D mesh hover, OR if it's the currently selected component
   const isHovered = hoveredComponent === component.id || hoveredMeshId === component.id || selectedComponent === component.id
   const color = catColor[component.category] || '#00893D'
   
-  // Only use the anchor if the component successfully mapped to a target mesh,
-  // otherwise fallback to the bike center [0,0,0] so it doesn't float in the air.
-  const hasTarget = component.targetMeshes && component.targetMeshes.length > 0;
-  const pinPosition = hasTarget ? component.anchor : [0, 0.5, 0];
+  // 1. Use dynamic anchor (calculated from meshes) if available
+  // 2. Otherwise, for safety, DO NOT fall back to bad hardcoded anchors 
+  //    if they would float in the air. We only show the pin if high-fidelity 
+  //    positioning is available.
+  const dynPos = dynamicAnchors[component.id];
+  if (!dynPos) return null; // Hide pin if not mapped to a mesh
+
+  const pinPosition = dynPos;
 
   return (
     <Html position={pinPosition} center zIndexRange={[10, 20]}>

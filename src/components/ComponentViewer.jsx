@@ -1,60 +1,80 @@
-import { useState, useEffect, useRef, Suspense } from 'react'
+import React, { useState, useEffect, useRef, Suspense } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Environment, useGLTF, Stage, Bounds, PerformanceMonitor, Center } from '@react-three/drei'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
 import LoadingScreen from './LoadingScreen.jsx'
 import gsap from 'gsap'
+import { isMeshMatch } from '../utils/meshMapping.js'
 
-function ComponentModel({ modelPath, scrollProgress = 0 }) {
+function ComponentModel({ componentId, modelPath, color = '#00893D', scrollProgress = 0 }) {
   const { scene } = useGLTF(modelPath, '/draco/')
   const sceneRef = useRef()
   const localExplode = useRef(0)
 
-  // Pre-calculate realistic explode directions
+  // Map meshes on load for highlighting
   useEffect(() => {
     if (!scene) return
 
-    // Calculate bounding box of the entire component scene
+    // Calculate components bounding box
     const bbox = new THREE.Box3().setFromObject(scene)
     const center = new THREE.Vector3()
     bbox.getCenter(center)
 
-    // Store original positions and compute directions for each mesh
     scene.traverse(child => {
-      if (child.isMesh) {
-        // Only save origPos once
-        if (child.userData.origX === undefined) {
-          child.userData.origPos = child.position.clone()
-          child.userData.origX = child.position.x // Keep for compatibility if needed
+      if (!child.isMesh) return
+
+      // Map meshes using our robust utility
+      // For the standalone viewer, we check if it matches the current component
+      const isMatch = isMeshMatch(child.name, [], componentId)
+      
+      if (isMatch) {
+        // Apply highlight color
+        if (!child.userData.isMaterialCloned) {
+          child.material = Array.isArray(child.material) 
+            ? child.material.map(m => m.clone()) 
+            : child.material.clone()
+          child.userData.isMaterialCloned = true
         }
 
-        const mbox = new THREE.Box3().setFromObject(child)
-        const mCenter = new THREE.Vector3()
-        mbox.getCenter(mCenter)
+        const applyColor = (mat) => {
+          if (mat.emissive) {
+            mat.emissive.set(color)
+            mat.emissiveIntensity = 0.5
+          }
+          if (mat.color) mat.color.set(color)
+        }
 
-        const dir = mCenter.clone().sub(center)
-        const len = dir.length()
-        child.userData.explodeDir = len > 0.001 ? dir.normalize() : new THREE.Vector3(0, 1, 0)
+        if (Array.isArray(child.material)) child.material.forEach(applyColor)
+        else applyColor(child.material)
       }
+
+      // Store positions for explosion
+      if (child.userData.origPos === undefined) {
+        child.userData.origPos = child.position.clone()
+      }
+
+      const mbox = new THREE.Box3().setFromObject(child)
+      const mCenter = new THREE.Vector3()
+      mbox.getCenter(mCenter)
+
+      const dir = mCenter.clone().sub(center)
+      const len = dir.length()
+      child.userData.explodeDir = len > 0.001 ? dir.normalize() : new THREE.Vector3(0, 1, 0)
     })
-  }, [scene])
+  }, [scene, componentId, color])
 
   // Sync scrollProgress to 3D positions in the mesh render loop
   useFrame(() => {
     if (!scene) return
     
-    // Smoothly lerp towards the target scroll progress
     localExplode.current += (scrollProgress - localExplode.current) * 0.1
     const t = localExplode.current
-    
-    // How far parts travel (increased for visibility)
     const EXPLODE_SCALE = 2.0
 
     scene.traverse(child => {
       if (child.isMesh && child.userData.origPos && child.userData.explodeDir) {
         const { origPos, explodeDir } = child.userData
-        
         child.position.set(
           origPos.x + explodeDir.x * t * EXPLODE_SCALE,
           origPos.y + explodeDir.y * t * EXPLODE_SCALE,
@@ -109,7 +129,12 @@ export default function ComponentViewer({ componentId, modelFile, color = '#0089
             <ErrorBoundary fallback={<Center><FallbackBox color={color} /></Center>} onError={() => setModelError(true)}>
               <Suspense fallback={<Center><FallbackBox color={color} /></Center>}>
                 <Center>
-                  <ComponentModel modelPath={modelPath} scrollProgress={scrollProgress} />
+                  <ComponentModel 
+                    componentId={componentId} 
+                    modelPath={modelPath} 
+                    color={color}
+                    scrollProgress={scrollProgress} 
+                  />
                 </Center>
               </Suspense>
             </ErrorBoundary>
