@@ -8,7 +8,7 @@ import gsap from 'gsap'
 import { isMeshMatch } from '../utils/meshMapping.js'
 
 function ComponentModel({ componentId, modelPath, color = '#00893D', scrollProgress = 0 }) {
-  const { scene } = useGLTF(modelPath, '/draco/')
+  const { scene } = useGLTF(modelPath, './draco/')
   const sceneRef = useRef()
   const localExplode = useRef(0)
 
@@ -105,7 +105,7 @@ function FallbackBox({ color = '#00893D' }) {
 export default function ComponentViewer({ componentId, modelFile, color = '#00893D', scrollProgress = 0 }) {
   const [modelError, setModelError] = useState(false)
   const [dpr, setDpr] = useState(1.5)
-  const modelPath = `/models/${modelFile}`
+  const modelPath = `./models/${modelFile}`
 
   return (
     <Canvas

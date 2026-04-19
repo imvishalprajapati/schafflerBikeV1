@@ -10,7 +10,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-        <img src="/SchaefflerLogo.png" alt="Schaeffler" style={{ height: '24px', objectFit: 'contain' }} />
+        <img src="./SchaefflerLogo.png" alt="Schaeffler" style={{ height: '24px', objectFit: 'contain' }} />
       </div>
 
       <div className="navbar-controls">

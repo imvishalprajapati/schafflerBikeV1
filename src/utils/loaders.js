@@ -14,7 +14,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 // Points to the local decoder files in /public/draco/
 // Works without internet — critical for the Electron desktop build.
 const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco/')
+dracoLoader.setDecoderPath('./draco/')
 dracoLoader.preload() // Pre-warms the WASM decoder in the background
 
 // ── GLTFLoader ────────────────────────────────────────────────
