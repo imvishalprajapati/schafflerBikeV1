@@ -46,8 +46,11 @@
       "output": "dist-electron"
     },
     "win": {
-      "target": "dir",
+      "target": "nsis",
       "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "zip"
     },
     "files": [
       "dist/**",
