@@ -19,10 +19,6 @@ const COMPONENT_RADIUS = 100
 // How far parts travel at full explosion
 const EXPLODE_SCALE = 2.0
 
-// ── DEV: Anchor calibration mode ─────────────────────────────────────────
-// Ctrl+Click any mesh → logs its group-local X,Y,Z to console.
-// Copy those values into components.js anchor:[] to recalibrate.
-const DEV_PICK_MODE = import.meta.env.DEV
 
 // ── BikeViewer ───────────────────────────────────────────────────────────
 export default function BikeViewer({ groupRef }) {
@@ -59,38 +55,11 @@ export default function BikeViewer({ groupRef }) {
     scene.traverse(child => {
       if (!child.isMesh) return;
 
-      // Temporary log to see exactly how Three.js formats the Fuel Injector string
-      if (child.name.includes("049")) {
-        console.log("TRUE THREE.JS NAME FOR 049 IS:", child.name);
-      }
+
       // ...
     })
 
-    // ── DEV: Print the bike's bounding box IN GROUP-LOCAL space ───────────
-    // Since the group has only uniform scale + translation (no rotation),
-    // we can worldToLocal the two AABB corners to get the anchor coordinate range.
-    if (import.meta.env.DEV && groupRef.current) {
-      const minW = bbox.min.clone()
-      const maxW = bbox.max.clone()
-      // Transform scene-local → world (scene has no transform as <primitive>)
-      // scene-local = world here because scene sits at the group's child level
-      // and <primitive object={scene}> has no position offset by default.
-      // So we just need groupRef.worldToLocal:
-      const minL = groupRef.current.worldToLocal(minW)
-      const maxL = groupRef.current.worldToLocal(maxW)
-      // Note: worldToLocal inverts scale so min/max may swap axes — take true min/max
-      const trueMin = new THREE.Vector3(Math.min(minL.x, maxL.x), Math.min(minL.y, maxL.y), Math.min(minL.z, maxL.z))
-      const trueMax = new THREE.Vector3(Math.max(minL.x, maxL.x), Math.max(minL.y, maxL.y), Math.max(minL.z, maxL.z))
-      const trueCenter = trueMin.clone().add(trueMax).multiplyScalar(0.5)
-      const trueSize = trueMax.clone().sub(trueMin)
-      console.log('%c[BikeViewer] GROUP-LOCAL bounding box (= anchor coordinate space):',
-        'color:#ff8c00;font-weight:bold')
-      console.log(`  min:    [${trueMin.x.toFixed(3)}, ${trueMin.y.toFixed(3)}, ${trueMin.z.toFixed(3)}]`)
-      console.log(`  max:    [${trueMax.x.toFixed(3)}, ${trueMax.y.toFixed(3)}, ${trueMax.z.toFixed(3)}]`)
-      console.log(`  center: [${trueCenter.x.toFixed(3)}, ${trueCenter.y.toFixed(3)}, ${trueCenter.z.toFixed(3)}]`)
-      console.log(`  size:   ${trueSize.x.toFixed(3)} × ${trueSize.y.toFixed(3)} × ${trueSize.z.toFixed(3)}`)
-      console.log('  Anchors should use values within this range!')
-    }
+
 
     // Pre-init groups
     const groups = {}
@@ -121,11 +90,7 @@ export default function BikeViewer({ groupRef }) {
     // Pre-map the components that have explicitly assigned targetMeshes
     assignedMeshes = 0
 
-    // DEV: Automatically calculate exact anchor positions and print them to console
-    if (import.meta.env.DEV) {
-      console.groupCollapsed('%c[BikeViewer] AUTO-CALCULATED ANCHORS', 'color:#00ff00;font-weight:bold');
-      console.log('Copy these exact values into components.js replacing the [0,0,0] anchors:');
-    }
+
 
     const setDynamicAnchors = useShowroomStore.getState().setDynamicAnchors
     const calculatedAnchors = {}
@@ -177,16 +142,7 @@ export default function BikeViewer({ groupRef }) {
     // Push all calculated anchors to store at once
     setDynamicAnchors(calculatedAnchors)
 
-    if (import.meta.env.DEV) {
-      console.groupCollapsed('%c[BikeViewer] MAPPING REPORT', 'color:#00893D;font-weight:bold');
-      console.log(`Total Meshes: ${totalMeshes}`);
-      console.log(`Successfully mapped: ${components.length - unmappedIds.length} components`);
-      if (unmappedIds.length > 0) {
-        console.warn(`Failed to map ${unmappedIds.length} components:`, unmappedIds);
-        console.log('Suggestions: Update components.js targetMeshes with substrings of actual mesh names.');
-      }
-      console.groupEnd();
-    }
+
   }, [scene, groupRef])
 
   // ── 2. Per-frame explode animation ──────────────────────────────────────
@@ -306,10 +262,7 @@ export default function BikeViewer({ groupRef }) {
       setHoveredMeshId(compId || null)
     }
 
-    if (import.meta.env.DEV && compId) {
-      const entry = ANCHOR_ENTRIES.find(a => a.id === compId)
-      console.log(`[Hover] mesh: "${obj.name}" → comp: "${entry?.label ?? compId}"`)
-    }
+
   }
 
   const handlePointerOut = (e) => {
@@ -326,13 +279,7 @@ export default function BikeViewer({ groupRef }) {
     e.stopPropagation()
     const obj = e.object
 
-    // ── DEV: Ctrl+Click = log this mesh's exact name ────────
-    if (DEV_PICK_MODE && e.nativeEvent?.ctrlKey) {
-      console.log(`%c[PICK] Exact mesh name: "${obj.name}"`, 'color:#00893D;font-weight:bold;font-size:16px')
-      console.log(`  To map this, add to components.js:`)
-      console.log(`  targetMeshes: ["${obj.name}"],`)
-      return
-    }
+
 
     // Normal click → Select component (don't navigate yet)
     const compId = obj?.userData?.componentId
