@@ -103,7 +103,7 @@ function LoadingOverlay() {
 // Reads camera distance each frame and pushes explodeProgress to the store.
 // Uses getState() to write — avoids cascading React re-renders.
 const EXPLODE_NEAR = 2.0   // camera distance where bike is FULLY exploded
-const EXPLODE_FAR  = 5.5   // camera distance where bike is assembled
+const EXPLODE_FAR = 5.5   // camera distance where bike is assembled
 
 function ZoomWatcher() {
   const { camera } = useThree()
@@ -236,6 +236,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ── Watermark ── */}
+      <div className="home-watermark">
+        {/* <span className="watermark-text">DEMO VERSION</span> */}
+        <div className="watermark-separator" />
+        <span className="watermark-text">SK3D</span>
+      </div>
+
       {/* ── Zoom hint — changes based on explode state ── */}
       <ZoomHint />
 
@@ -262,7 +269,7 @@ function ZoomHint() {
       <div className="hint-dot" />
       {isExploded
         ? 'Hover a part to identify it • Click to explore details'
-        : 'Scroll to zoom in — parts will separate • Click sidebar items to explore'
+        : ''
       }
     </div>
   )

@@ -1,27 +1,31 @@
 /* ── CSS Variables ─ Schaeffler Corporate Identity ── */
 :root {
   /* Core brand colors */
-  --schaeffler-green: rgb(7, 135, 60); /* #07873C */
+  --schaeffler-green: rgb(7, 135, 60);
+  /* #07873C */
   --schaeffler-green-light: #00b050;
   --schaeffler-green-dark: #005c29;
-  
+
   /* Digital Functional Colors */
   --schaeffler-red: #E4002B;
   --schaeffler-yellow: #FFC800;
   --schaeffler-nordic-blue: #00A5D9;
-  
+
   /* Grayscale mapping for Default White Background App */
-  --bg-primary: #FFFFFF; 
+  --bg-primary: #FFFFFF;
   --bg-secondary: #F5F5F5;
   --bg-card: rgba(255, 255, 255, 0.95);
   --bg-glass: rgba(0, 0, 0, 0.04);
   --bg-glass-hover: rgba(0, 0, 0, 0.08);
 
-  --text-primary: #121212; /* Black replaces white */
-  --text-secondary: #4A4A4A; /* Gray replaces light gray */
-  --text-muted: #7A7A7A; /* Dark muted replaces light muted */
+  --text-primary: #121212;
+  /* Black replaces white */
+  --text-secondary: #4A4A4A;
+  /* Gray replaces light gray */
+  --text-muted: #7A7A7A;
+  /* Dark muted replaces light muted */
 
-  --border: rgba(0,0,0,0.12);
+  --border: rgba(0, 0, 0, 0.12);
   --border-accent: rgba(0, 137, 61, 0.4);
 
   --glow-green: 0 0 30px rgba(0, 137, 61, 0.15);
@@ -37,27 +41,39 @@
   --font-heading: Arial, sans-serif;
 
   /* Type Scale */
-  --fs-h1: 36px; --lh-h1: 43px;
-  --fs-h2: 28px; --lh-h2: 35px;
-  --fs-h3: 20px; --lh-h3: 26px;
-  --fs-h4: 18px; --lh-h4: 25px;
-  --fs-h5: 18px; --lh-h5: 25px;
-  --fs-h6: 16px; --lh-h6: 25px;
-  --fs-body: 16px; --lh-body: 25px;
-  --fs-meta: 13px; --lh-meta: 20px;
+  --fs-h1: 36px;
+  --lh-h1: 43px;
+  --fs-h2: 28px;
+  --lh-h2: 35px;
+  --fs-h3: 20px;
+  --lh-h3: 26px;
+  --fs-h4: 18px;
+  --lh-h4: 25px;
+  --fs-h5: 18px;
+  --lh-h5: 25px;
+  --fs-h6: 16px;
+  --lh-h6: 25px;
+  --fs-body: 16px;
+  --lh-body: 25px;
+  --fs-meta: 13px;
+  --lh-meta: 20px;
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Reset ─────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -71,17 +87,61 @@ html, body, #root {
 }
 
 /* ── Typography Tag Styles ─────────────────────────────── */
-h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: 400; font-family: var(--font-heading); }
-h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: 400; font-family: var(--font-heading); }
-h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: 400; font-family: var(--font-heading); }
-h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 700; font-family: var(--font-heading); }
-h5 { font-size: var(--fs-h5); line-height: var(--lh-h5); font-weight: 400; font-family: var(--font-heading); }
-h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-family: var(--font-heading); }
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  font-weight: 400;
+  font-family: var(--font-heading);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  font-weight: 400;
+  font-family: var(--font-heading);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  font-weight: 400;
+  font-family: var(--font-heading);
+}
+
+h4 {
+  font-size: var(--fs-h4);
+  line-height: var(--lh-h4);
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+h5 {
+  font-size: var(--fs-h5);
+  line-height: var(--lh-h5);
+  font-weight: 400;
+  font-family: var(--font-heading);
+}
+
+h6 {
+  font-size: var(--fs-h6);
+  line-height: var(--lh-h6);
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
 
 /* ── Scrollbar ─────────────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--schaeffler-green); border-radius: 2px; }
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--schaeffler-green);
+  border-radius: 2px;
+}
 
 /* ── Loading Screen ────────────────────────────────────── */
 .loading-screen {
@@ -121,13 +181,31 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes spinPulse {
-  0%, 100% { transform: rotate(0deg); box-shadow: 0 0 20px rgba(0,137,61,0.4); }
-  50% { transform: rotate(180deg); box-shadow: 0 0 40px rgba(0,137,61,0.8); }
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+    box-shadow: 0 0 20px rgba(0, 137, 61, 0.4);
+  }
+
+  50% {
+    transform: rotate(180deg);
+    box-shadow: 0 0 40px rgba(0, 137, 61, 0.8);
+  }
 }
 
 @keyframes innerPulse {
-  0%, 100% { opacity: 0.6; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1); }
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .loading-title {
@@ -152,7 +230,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 .loading-bar-wrap {
   width: 300px;
   height: 2px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 1px;
   overflow: hidden;
 }
@@ -182,7 +260,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   justify-content: flex-end;
   gap: 2rem;
   padding: 0 2rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, transparent 100%);
   z-index: 400;
   -webkit-app-region: drag;
 }
@@ -204,8 +282,15 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes dotPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .navbar-brand {
@@ -249,9 +334,19 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   color: var(--text-secondary);
 }
 
-.window-btn:hover { background: var(--bg-glass-hover); }
-.window-btn.close:hover { background: rgba(228, 0, 43, 0.3); color: var(--schaeffler-red); }
-.window-btn.minimize:hover { background: rgba(255,200,0,0.2); color: #ffc800; }
+.window-btn:hover {
+  background: var(--bg-glass-hover);
+}
+
+.window-btn.close:hover {
+  background: rgba(228, 0, 43, 0.3);
+  color: var(--schaeffler-red);
+}
+
+.window-btn.minimize:hover {
+  background: rgba(255, 200, 0, 0.2);
+  color: #ffc800;
+}
 
 /* ── Home Page ─────────────────────────────────────────── */
 .home-page {
@@ -291,7 +386,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.12),
     0 2px 8px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
   pointer-events: auto;
 }
@@ -346,9 +441,18 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   mask-image: linear-gradient(to bottom, transparent 0%, black 4%, black 96%, transparent 100%);
 }
 
-.component-list::-webkit-scrollbar { width: 3px; }
-.component-list::-webkit-scrollbar-track { background: transparent; }
-.component-list::-webkit-scrollbar-thumb { background: rgba(0,137,61,0.3); border-radius: 2px; }
+.component-list::-webkit-scrollbar {
+  width: 3px;
+}
+
+.component-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.component-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 137, 61, 0.3);
+  border-radius: 2px;
+}
 
 /* Category groups */
 .sidebar-category-group {
@@ -411,7 +515,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   color: var(--schaeffler-green-dark);
   font-weight: 700;
   padding-left: 1.4rem;
-  box-shadow: inset 0 0 0 1px rgba(0,137,61,0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 137, 61, 0.08);
 }
 
 .comp-btn-label {
@@ -431,8 +535,17 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes arrowPulse {
-  0%, 100% { transform: translateX(0); opacity: 0.8; }
-  50% { transform: translateX(3px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateX(3px);
+    opacity: 1;
+  }
 }
 
 /* ── Hint Toast ────────────────────────────────────────── */
@@ -465,8 +578,15 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* ── Hotspot Pins ──────────────────────────────────────── */
@@ -514,8 +634,15 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes ringPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,137,61,0); }
-  50% { box-shadow: 0 0 0 6px rgba(0,137,61,0.15); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 137, 61, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 137, 61, 0.15);
+  }
 }
 
 .hotspot-label {
@@ -587,7 +714,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 60%, rgba(0,0,0,0.02) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 60%, rgba(0, 0, 0, 0.02) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -597,8 +724,8 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
 }
@@ -633,7 +760,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--schaeffler-green-light);
-  background: rgba(0,137,61,0.08);
+  background: rgba(0, 137, 61, 0.08);
   width: fit-content;
 }
 
@@ -672,8 +799,8 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 1rem;
-  background: rgba(0,137,61,0.06);
-  border: 1px solid rgba(0,137,61,0.12);
+  background: rgba(0, 137, 61, 0.06);
+  border: 1px solid rgba(0, 137, 61, 0.12);
   border-radius: var(--radius-sm);
   font-size: 0.8rem;
   color: var(--text-primary);
@@ -682,8 +809,8 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 .info-highlight:hover {
-  background: rgba(0,137,61,0.12);
-  border-color: rgba(0,137,61,0.25);
+  background: rgba(0, 137, 61, 0.12);
+  border-color: rgba(0, 137, 61, 0.25);
 }
 
 .info-highlight-icon {
@@ -799,7 +926,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 .back-button:hover {
-  background: rgba(0,137,61,0.12);
+  background: rgba(0, 137, 61, 0.12);
   border-color: var(--border-accent);
   color: var(--schaeffler-green-light);
 }
@@ -858,13 +985,27 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes scrollBounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(6px); }
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(6px);
+  }
 }
 
 @keyframes scrollDot {
-  0% { top: 5px; opacity: 1; }
-  100% { top: 16px; opacity: 0; }
+  0% {
+    top: 5px;
+    opacity: 1;
+  }
+
+  100% {
+    top: 16px;
+    opacity: 0;
+  }
 }
 
 /* ── Component viewer label overlay ─────────────────────── */
@@ -943,8 +1084,15 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 @keyframes pageSlideIn {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ── Responsive Orbit Controls hint dots ─────────────────── */
@@ -963,7 +1111,9 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 
 /* ── Canvas Loader Spinner ───────────────────────────────────────── */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Accordion Styles (InfoPanel & Sidebar) ──────────────── */
@@ -1064,7 +1214,8 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 }
 
 .sidebar-category-content.open {
-  max-height: 1000px; /* High enough for any category list */
+  max-height: 1000px;
+  /* High enough for any category list */
   opacity: 1;
 }
 
@@ -1074,4 +1225,39 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 
 .sidebar-category-group:last-child {
   border-bottom: none;
+}
+
+/* ── Watermark ────────────────────────────────────────── */
+.home-watermark {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 100;
+  pointer-events: none;
+  writing-mode: vertical-rl;
+}
+
+.watermark-text {
+  font-family: var(--font-heading);
+  font-size: 15rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  opacity: 0.4;
+  white-space: nowrap;
+  transform: rotate(-120deg);
+  z-index: -1;
+}
+
+.watermark-separator {
+  width: 1px;
+  height: 30px;
+  background: var(--text-muted);
+  opacity: 0.2;
 }
