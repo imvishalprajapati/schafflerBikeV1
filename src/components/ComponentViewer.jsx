@@ -158,7 +158,7 @@ function buildExplodeData(scene) {
 // ── ComponentModel ────────────────────────────────────────────────────────────
 function ComponentModel({ modelPath, scrollProgress = 0, explodeTrigger = 'scroll' }) {
   // Clone the raw cached scene so shared state across renders is avoided.
-  const { scene: rawScene } = useGLTF(modelPath, '/draco/')
+  const { scene: rawScene } = useGLTF(modelPath, './draco/')
   const scene = useMemo(() => rawScene.clone(true), [rawScene])
 
   const meshDataRef = useRef([])
@@ -249,7 +249,7 @@ export default function ComponentViewer({
 }) {
   const [modelError, setModelError] = useState(false)
   const [dpr, setDpr] = useState(1.5)
-  const modelPath = `/models/${modelFile}`
+  const modelPath = `./models/${modelFile}`
   const isZoomTrigger = explodeTrigger === 'zoom'
 
   return (

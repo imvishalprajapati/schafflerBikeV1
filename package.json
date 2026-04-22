@@ -3,6 +3,8 @@
   "productName": "Schaeffler 2W Showroom",
   "private": true,
   "version": "1.0.0",
+  "description": "Schaeffler 2W Showroom Application",
+  "author": "Schaeffler",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -10,8 +12,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "clean": "rd /s /q dist-electron 2>nul || exit 0",
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
-    "electron:build": "vite build && electron-builder"
+    "electron:build": "taskkill /F /IM \"Schaeffler 2W Showroom.exe\" /T /FI \"STATUS eq RUNNING\" 2>nul & npm run clean && vite build && electron-builder"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -46,8 +49,8 @@
       "output": "dist-electron"
     },
     "win": {
-      "target": "nsis",
-      "icon": "public/icon.ico"
+      "target": ["portable", "zip"],
+      "forceCodeSigning": false
     },
     "mac": {
       "target": "zip"
