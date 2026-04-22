@@ -9,6 +9,10 @@ const EXPLODE_START = 5.0   // camera inside this distance → explosion begins
 const EXPLODE_FULL = 1.2   // camera at this distance    → fully exploded
 const MIN_DIST_ZOOM = 0.8   // must be ≤ EXPLODE_FULL so user can reach full explosion
 
+// Reusable scratch vectors — allocated ONCE, reused every frame to avoid GC pressure
+const _tempW = new THREE.Vector3()
+const _tempL = new THREE.Vector3()
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function variance(values) {
   if (!values.length) return 0
@@ -200,10 +204,7 @@ function ComponentModel({ modelPath, scrollProgress = 0, explodeTrigger = 'scrol
     const modelRadius = items[0]?.modelRadius ?? 1
     const explodeScale = modelRadius * 2.2
 
-    // ── Move each mesh ───────────────────────────────────────────────────────
-    const tempW = new THREE.Vector3()
-    const tempL = new THREE.Vector3()
-
+    // ── Move each mesh (uses module-level scratch vectors to avoid GC) ────────
     for (const { mesh, origLocalPos, explodeDir } of items) {
       if (!mesh.parent) {
         mesh.position.set(
@@ -215,11 +216,11 @@ function ComponentModel({ modelPath, scrollProgress = 0, explodeTrigger = 'scrol
       }
 
       // Convert original local → world, add world-space offset, convert back
-      tempW.copy(origLocalPos)
-      mesh.parent.localToWorld(tempW)
-      tempW.addScaledVector(explodeDir, t * explodeScale)
-      mesh.parent.worldToLocal(tempL.copy(tempW))
-      mesh.position.copy(tempL)
+      _tempW.copy(origLocalPos)
+      mesh.parent.localToWorld(_tempW)
+      _tempW.addScaledVector(explodeDir, t * explodeScale)
+      mesh.parent.worldToLocal(_tempL.copy(_tempW))
+      mesh.position.copy(_tempL)
     }
   })
 

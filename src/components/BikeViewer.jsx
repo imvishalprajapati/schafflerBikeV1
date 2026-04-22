@@ -37,6 +37,8 @@ export default function BikeViewer({ groupRef }) {
 
   // componentId → Mesh[] — built once at load time
   const compGroupsRef = useRef({})
+  // Pre-built lookup: componentId → Mesh[] for O(k) highlighting instead of O(n) traversal
+  const meshesByComponentRef = useRef({})
   // Set of currently highlighted meshes (for O(1) batch clear)
   const highlightedRef = useRef(new Set())
   // Currently active component zone (from 3D hover)
@@ -158,6 +160,10 @@ export default function BikeViewer({ groupRef }) {
           child.userData.componentId = comp.id
           assignedMeshes++
 
+          // Build pre-computed lookup for O(k) highlighting
+          if (!meshesByComponentRef.current[comp.id]) meshesByComponentRef.current[comp.id] = []
+          meshesByComponentRef.current[comp.id].push(child)
+
           let mbox = new THREE.Box3().setFromObject(child);
           compBBox.expandByPoint(mbox.min);
           compBBox.expandByPoint(mbox.max);
@@ -274,22 +280,24 @@ export default function BikeViewer({ groupRef }) {
   const selectedComponentId = useShowroomStore(s => s.selectedComponent)
 
   // Monitor side panel hover state (hoveredUiMeshId) and highlight all meshes belonging to that component
+  // Uses pre-built meshesByComponentRef for O(k) lookup instead of O(n) scene.traverse()
   useEffect(() => {
     // If no hover, but we have a selection, keep selection highlighted
     clearAllHighlights()
     const targetCompId = hoveredUiMeshId || selectedComponentId
 
-    if (targetCompId && scene) {
-      scene.traverse(child => {
-        if (child.isMesh && child.userData.componentId === targetCompId) {
-          applyEmissive(child, '#00893D', 1.1)
+    if (targetCompId) {
+      const meshes = meshesByComponentRef.current[targetCompId]
+      if (meshes) {
+        for (const mesh of meshes) {
+          applyEmissive(mesh, '#00893D', 1.1)
         }
-      })
+      }
       invalidate()
     } else {
       invalidate()
     }
-  }, [hoveredUiMeshId, selectedComponentId, scene, invalidate])
+  }, [hoveredUiMeshId, selectedComponentId, invalidate])
 
 
   // ── 4. Pointer handlers ──────────────────────────────────────────────────
@@ -357,8 +365,9 @@ export default function BikeViewer({ groupRef }) {
         scale={10}
         blur={2.5}
         far={2}
-        resolution={512}
+        resolution={256}
         color="#000000"
+        frames={1}
       />
 
       {/* Floor glow ring */}

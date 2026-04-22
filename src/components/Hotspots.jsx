@@ -14,7 +14,12 @@ const catColor = {
 
 function HotspotPin({ component }) {
   const navigate = useNavigate()
-  const { hoveredComponent, hoveredMeshId, selectedComponent, setHoveredComponent, dynamicAnchors } = useShowroomStore()
+  // Selective selectors — only rerender when the specific field changes, not on every store update
+  const hoveredComponent = useShowroomStore(s => s.hoveredComponent)
+  const hoveredMeshId = useShowroomStore(s => s.hoveredMeshId)
+  const selectedComponent = useShowroomStore(s => s.selectedComponent)
+  const setHoveredComponent = useShowroomStore(s => s.setHoveredComponent)
+  const dynamicAnchors = useShowroomStore(s => s.dynamicAnchors)
   // Pin is active if selected via sidebar, 3D mesh hover, OR if it's the currently selected component
   const isHovered = hoveredComponent === component.id || hoveredMeshId === component.id || selectedComponent === component.id
   const color = catColor[component.category] || '#00893D'
