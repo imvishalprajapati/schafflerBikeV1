@@ -102,7 +102,11 @@ export default function InfoPanel({ component }) {
 
       {/* Features — accordion */}
       {component.features?.length > 0 && (
-        <AccordionSection label="Features" color={color} defaultOpen={true}>
+        <AccordionSection 
+          label="Features" 
+          color={color} 
+          defaultOpen={true}
+        >
           <ul className="info-features-list">
             {component.features.map((f, i) => (
               <li key={i}>{f}</li>
@@ -113,7 +117,11 @@ export default function InfoPanel({ component }) {
 
       {/* Advantages — accordion */}
       {component.advantages?.length > 0 && (
-        <AccordionSection label="Advantages" color={color} defaultOpen={false}>
+        <AccordionSection 
+          label="Advantages" 
+          color={color} 
+          defaultOpen={!component.features?.length}
+        >
           <ul className="info-features-list">
             {component.advantages.map((a, i) => (
               <li key={i}>{a}</li>
@@ -124,7 +132,11 @@ export default function InfoPanel({ component }) {
 
       {/* Technical Specifications — accordion */}
       {component.specs && Object.keys(component.specs).length > 0 && (
-        <AccordionSection label="Technical Specifications" color={color} defaultOpen={false}>
+        <AccordionSection 
+          label="Technical Specifications" 
+          color={color} 
+          defaultOpen={!component.features?.length && !component.advantages?.length}
+        >
           <table className="specs-table">
             <tbody>
               {Object.entries(component.specs).map(([key, val]) => (

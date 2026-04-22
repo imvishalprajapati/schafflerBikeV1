@@ -131,7 +131,9 @@ export default function BikeViewer({ groupRef }) {
     const calculatedAnchors = {}
     const unmappedIds = []
 
-    components.forEach(comp => {
+    const filteredComponents = components.filter(c => c.category !== 'Electrification')
+
+    filteredComponents.forEach(comp => {
       let compBBox = new THREE.Box3();
       let hasMeshes = false;
 

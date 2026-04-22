@@ -579,7 +579,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
 
 .detail-viewer-pane {
   position: relative;
-  background: radial-gradient(ellipse at center, rgba(0,137,61,0.08) 0%, var(--bg-primary) 100%);
+  background: radial-gradient(ellipse at 50% 60%, #fcfcfc 0%, var(--bg-primary) 100%);
   overflow: hidden;
 }
 
@@ -587,7 +587,7 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 60%, rgba(0,137,61,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 60%, rgba(0,0,0,0.02) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -597,8 +597,8 @@ h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,137,61,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,137,61,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
 }

@@ -17,8 +17,16 @@ const CAT_COLOR = {
 }
 
 // ── Sidebar Category Accordion ───────────────────────────────────────────
-function SidebarCategory({ category, comps, hoveredComponent, hoveredMeshId, setHoveredComponent, navigate }) {
-  const [isOpen, setIsOpen] = useState(category === 'Engine') // Engine open by default
+function SidebarCategory({ category, comps, hoveredComponent, hoveredMeshId, setHoveredComponent, navigate, initiallyOpen }) {
+  const [isOpen, setIsOpen] = useState(initiallyOpen)
+  const selectedComponent = useShowroomStore(state => state.selectedComponent)
+
+  // Auto-expand if one of our components is selected elsewhere (e.g. clicking 3D model)
+  useEffect(() => {
+    if (selectedComponent && comps.some(c => c.id === selectedComponent)) {
+      setIsOpen(true)
+    }
+  }, [selectedComponent, comps])
 
   return (
     <div className="sidebar-category-group">
@@ -37,7 +45,7 @@ function SidebarCategory({ category, comps, hoveredComponent, hoveredMeshId, set
           const isActive =
             hoveredComponent === comp.id ||
             hoveredMeshId === comp.id ||
-            useShowroomStore.getState().selectedComponent === comp.id
+            selectedComponent === comp.id
 
           return (
             <button
@@ -129,6 +137,8 @@ export default function Home() {
   // for component ID resolution
   const bikeGroupRef = useRef()
 
+  const filteredComponents = components.filter(c => c.category !== 'Electrification')
+
   return (
     <div className="home-page">
 
@@ -199,19 +209,18 @@ export default function Home() {
           <div className="sidebar-header">
             <div className="sidebar-header-accent" />
             <span>COMPONENTS</span>
-            <div className="sidebar-header-count">{components.length}</div>
+            <div className="sidebar-header-count">{filteredComponents.length}</div>
           </div>
 
           <div className="component-list">
             {Object.entries(
-              components
-                .filter(c => c.category !== 'Electrification')
+              filteredComponents
                 .reduce((acc, comp) => {
                   if (!acc[comp.category]) acc[comp.category] = []
                   acc[comp.category].push(comp)
                   return acc
                 }, {})
-            ).map(([category, comps]) => (
+            ).map(([category, comps], idx) => (
               <SidebarCategory
                 key={category}
                 category={category}
@@ -220,6 +229,7 @@ export default function Home() {
                 hoveredMeshId={hoveredMeshId}
                 setHoveredComponent={setHoveredComponent}
                 navigate={navigate}
+                initiallyOpen={idx === 0}
               />
             ))}
           </div>

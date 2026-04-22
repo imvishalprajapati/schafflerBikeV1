@@ -262,11 +262,11 @@ export default function ComponentViewer({
     >
       <PerformanceMonitor onDecline={() => setDpr(1)} />
       <Suspense fallback={null}>
-        {/* Lighting */}
+        {/* Lighting — neutral studio setup */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1.5} castShadow />
-        <directionalLight position={[-3, 3, -3]} intensity={0.5} color={color} />
-        <pointLight position={[0, 4, 2]} intensity={0.8} color={color} />
+        <directionalLight position={[-3, 3, -3]} intensity={0.5} color="#ffffff" />
+        <pointLight position={[0, 4, 2]} intensity={0.8} color="#ffffff" />
 
         {/*
           observe=false for zoom-trigger: prevents Bounds from re-fitting the
