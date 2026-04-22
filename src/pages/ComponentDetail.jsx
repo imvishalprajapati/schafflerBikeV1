@@ -37,10 +37,10 @@ export default function ComponentDetail() {
 
   if (!component) {
     return (
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', flexDirection:'column', gap:'1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ fontSize: '3rem' }}>⚠</div>
         <div style={{ color: 'var(--text-secondary)' }}>Component not found</div>
-        <button className="back-button" style={{ position:'static' }} onClick={() => navigate('/')}>← Back to Showroom</button>
+        <button className="back-button" style={{ position: 'static' }} onClick={() => navigate('/')}>← Back to Showroom</button>
       </div>
     )
   }
@@ -61,13 +61,14 @@ export default function ComponentDetail() {
           componentId={component.id}
           modelFile={component.model}
           color={color}
-          scrollProgress={component.hasExplodedView ? scrollProgress : 0}
+          scrollProgress={component.hasExplodedView && component.explodeTrigger !== 'zoom' ? scrollProgress : 0}
+          explodeTrigger={component.explodeTrigger}
         />
 
         {/* Component label */}
         <div className="viewer-label-overlay">
-          <div className="viewer-component-name">{component.id.replace(/_/g,' ')}</div>
-          <div className="viewer-orbit-hint">Drag to rotate · Scroll to zoom</div>
+          <div className="viewer-component-name">{component.id.replace(/_/g, ' ')}</div>
+          <div className="viewer-orbit-hint">Drag to rotate · {component.explodeTrigger === 'zoom' ? 'Zoom to explode' : 'Scroll to zoom'}</div>
         </div>
 
         {/* Scroll-driven explode progress bar (Only if supported by the component class) */}
@@ -84,7 +85,7 @@ export default function ComponentDetail() {
         {scrollProgress < 0.05 && component.hasExplodedView && (
           <div className="scroll-hint">
             <div className="scroll-hint-wheel" style={{ borderColor: color }} />
-            <div className="scroll-hint-text" style={{ color }}>Scroll to explode</div>
+            <div className="scroll-hint-text" style={{ color }}>{component.explodeTrigger === 'zoom' ? 'Zoom to explode' : 'Scroll to explode'}</div>
           </div>
         )}
       </div>

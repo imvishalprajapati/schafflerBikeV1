@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 const catColor = {
@@ -6,9 +6,53 @@ const catColor = {
   'Engine Control Units': '#00b050',
   'Transmission': '#0077cc',
   'Chassis': '#cc7700',
-  'Electrification': '#9900cc',
+  // 'Electrification': '#9900cc',  // hidden
 }
 
+// ── Accordion item ────────────────────────────────────────────────────────────
+function AccordionSection({ label, color, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  const bodyRef = useRef()
+
+  useEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    if (open) {
+      el.style.maxHeight = el.scrollHeight + 'px'
+      el.style.opacity = '1'
+    } else {
+      el.style.maxHeight = '0'
+      el.style.opacity = '0'
+    }
+  }, [open])
+
+  return (
+    <div className="accordion-section anim-item">
+      <button
+        className="accordion-header"
+        onClick={() => setOpen(o => !o)}
+        style={{ '--acc-color': color }}
+        aria-expanded={open}
+      >
+        <span className="accordion-label" style={{ color }}>{label}</span>
+        <span className={`accordion-chevron ${open ? 'open' : ''}`} style={{ color }}>
+          ‹
+        </span>
+      </button>
+      <div
+        ref={bodyRef}
+        className="accordion-body"
+        style={{ maxHeight: defaultOpen ? '1000px' : '0', opacity: defaultOpen ? '1' : '0' }}
+      >
+        <div className="accordion-body-inner">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── InfoPanel ─────────────────────────────────────────────────────────────────
 export default function InfoPanel({ component }) {
   const panelRef = useRef()
 
@@ -41,7 +85,7 @@ export default function InfoPanel({ component }) {
         {component.tagline}
       </div>
 
-      {/* Highlights */}
+      {/* Key Highlights — always visible, no accordion */}
       {component.highlights?.length > 0 && (
         <div className="anim-item">
           <div className="info-section-label" style={{ color }}>Key Highlights</div>
@@ -56,34 +100,31 @@ export default function InfoPanel({ component }) {
         </div>
       )}
 
-      {/* Features */}
+      {/* Features — accordion */}
       {component.features?.length > 0 && (
-        <div className="anim-item">
-          <div className="info-section-label" style={{ color }}>Features</div>
+        <AccordionSection label="Features" color={color} defaultOpen={true}>
           <ul className="info-features-list">
             {component.features.map((f, i) => (
               <li key={i}>{f}</li>
             ))}
           </ul>
-        </div>
+        </AccordionSection>
       )}
 
-      {/* Advantages */}
+      {/* Advantages — accordion */}
       {component.advantages?.length > 0 && (
-        <div className="anim-item">
-          <div className="info-section-label" style={{ color }}>Advantages</div>
+        <AccordionSection label="Advantages" color={color} defaultOpen={false}>
           <ul className="info-features-list">
             {component.advantages.map((a, i) => (
               <li key={i}>{a}</li>
             ))}
           </ul>
-        </div>
+        </AccordionSection>
       )}
 
-      {/* Tech Specs */}
+      {/* Technical Specifications — accordion */}
       {component.specs && Object.keys(component.specs).length > 0 && (
-        <div className="anim-item">
-          <div className="info-section-label" style={{ color }}>Technical Specifications</div>
+        <AccordionSection label="Technical Specifications" color={color} defaultOpen={false}>
           <table className="specs-table">
             <tbody>
               {Object.entries(component.specs).map(([key, val]) => (
@@ -94,7 +135,7 @@ export default function InfoPanel({ component }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </AccordionSection>
       )}
 
       {/* Bottom padding */}

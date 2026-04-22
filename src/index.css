@@ -1,35 +1,7 @@
-@font-face {
-  font-family: 'NotoSans';
-  src: url('/fonts/NotoSans-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'NotoSans';
-  src: url('/fonts/NotoSans-Italic.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'NotoSans';
-  src: url('/fonts/NotoSans-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'NotoSans';
-  src: url('/fonts/NotoSans-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-}
-
 /* ── CSS Variables ─ Schaeffler Corporate Identity ── */
 :root {
   /* Core brand colors */
-  --schaeffler-green: #00893D;
+  --schaeffler-green: rgb(7, 135, 60); /* #07873C */
   --schaeffler-green-light: #00b050;
   --schaeffler-green-dark: #005c29;
   
@@ -60,9 +32,19 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  /* Typography strictly mandated as NotoSans */
-  --font-body: 'NotoSans', Arial, sans-serif;
-  --font-heading: 'NotoSans', Arial, sans-serif;
+  /* Typography strictly mandated as Arial */
+  --font-body: Arial, sans-serif;
+  --font-heading: Arial, sans-serif;
+
+  /* Type Scale */
+  --fs-h1: 36px; --lh-h1: 43px;
+  --fs-h2: 28px; --lh-h2: 35px;
+  --fs-h3: 20px; --lh-h3: 26px;
+  --fs-h4: 18px; --lh-h4: 25px;
+  --fs-h5: 18px; --lh-h5: 25px;
+  --fs-h6: 16px; --lh-h6: 25px;
+  --fs-body: 16px; --lh-body: 25px;
+  --fs-meta: 13px; --lh-meta: 20px;
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,11 +64,19 @@ html, body, #root {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-body);
-  font-size: 16px; /* Baseline Copy Size */
-  line-height: 25px; /* LS 25px equivalent */
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
   user-select: none;
 }
+
+/* ── Typography Tag Styles ─────────────────────────────── */
+h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: 400; font-family: var(--font-heading); }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: 400; font-family: var(--font-heading); }
+h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: 400; font-family: var(--font-heading); }
+h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 700; font-family: var(--font-heading); }
+h5 { font-size: var(--fs-h5); line-height: var(--lh-h5); font-weight: 400; font-family: var(--font-heading); }
+h6 { font-size: var(--fs-h6); line-height: var(--lh-h6); font-weight: 700; font-family: var(--font-heading); }
 
 /* ── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
@@ -142,9 +132,9 @@ html, body, #root {
 
 .loading-title {
   font-family: var(--font-heading);
-  font-size: 36px; /* H1 guideline */
-  line-height: 43px;
-  font-weight: bold;
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  font-weight: 400;
   color: var(--text-primary);
 }
 
@@ -220,9 +210,9 @@ html, body, #root {
 
 .navbar-brand {
   font-family: var(--font-heading);
-  font-size: 20px; /* H3 Guideline */
-  line-height: 26px;
-  font-weight: bold;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  font-weight: 400;
   text-transform: uppercase;
   color: var(--text-primary);
 }
@@ -232,8 +222,8 @@ html, body, #root {
 }
 
 .navbar-tagline {
-  font-size: 13px; /* Meta labels guideline */
-  line-height: 20px;
+  font-size: var(--fs-meta);
+  line-height: var(--lh-meta);
   color: var(--text-muted);
 }
 
@@ -656,15 +646,15 @@ html, body, #root {
 
 .info-title {
   font-family: var(--font-heading);
-  font-size: 36px; /* H1 */
-  line-height: 43px;
-  font-weight: bold;
+  font-size: var(--fs-h1);
+  line-height: var(--lh-h1);
+  font-weight: 400;
   color: var(--text-primary);
 }
 
 .info-tagline {
-  font-size: 18px; /* H4 / H5 size */
-  line-height: 25px;
+  font-size: var(--fs-h4);
+  line-height: var(--lh-h4);
   color: var(--text-secondary);
   border-left: 2px solid var(--schaeffler-green);
   padding-left: 1rem;
@@ -712,9 +702,9 @@ html, body, #root {
 
 /* Section labels */
 .info-section-label {
-  font-size: 16px; /* H6 equivalent */
-  line-height: 25px;
-  font-weight: bold;
+  font-size: var(--fs-h6);
+  line-height: var(--lh-h6);
+  font-weight: 700;
   color: var(--schaeffler-green);
   margin-bottom: 0.75rem;
   display: flex;
@@ -974,4 +964,114 @@ html, body, #root {
 /* ── Canvas Loader Spinner ───────────────────────────────────────── */
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Accordion Styles (InfoPanel & Sidebar) ──────────────── */
+
+/* InfoPanel Accordion */
+.accordion-section {
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.accordion-header:hover .accordion-label {
+  opacity: 0.8;
+}
+
+.accordion-label {
+  font-size: var(--fs-h6);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+
+.accordion-chevron {
+  font-size: 1.2rem;
+  font-weight: 300;
+  display: inline-block;
+  transform: rotate(-90deg);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-chevron.open {
+  transform: rotate(90deg);
+}
+
+.accordion-body {
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.accordion-body-inner {
+  padding-bottom: 1.5rem;
+}
+
+/* Sidebar Accordion */
+.sidebar-category-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.sidebar-category-header:hover {
+  background: rgba(0, 137, 61, 0.04);
+}
+
+.sidebar-cat-name {
+  flex: 1;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cat-color);
+}
+
+.sidebar-cat-chevron {
+  font-size: 1rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-cat-chevron.open {
+  transform: rotate(90deg);
+}
+
+.sidebar-category-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.sidebar-category-content.open {
+  max-height: 1000px; /* High enough for any category list */
+  opacity: 1;
+}
+
+.sidebar-category-group {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-category-group:last-child {
+  border-bottom: none;
 }

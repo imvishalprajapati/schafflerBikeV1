@@ -26,7 +26,7 @@ const DEV_PICK_MODE = import.meta.env.DEV
 
 // ── BikeViewer ───────────────────────────────────────────────────────────
 export default function BikeViewer({ groupRef }) {
-  const { scene } = useGLTF('./models/Grops Bikes1.glb')
+  const { scene } = useGLTF('/models/Grops_Bikes1.glb')
   const { invalidate } = useThree()
   const navigate = useNavigate()
 
@@ -137,9 +137,9 @@ export default function BikeViewer({ groupRef }) {
 
       scene.traverse(child => {
         if (!child.isMesh) return
-        
+
         let isMatch = isMeshMatch(child.name, comp.targetMeshes, comp.id);
-        
+
         // Check if any parent group matches the component name
         if (!isMatch) {
           let parent = child.parent;

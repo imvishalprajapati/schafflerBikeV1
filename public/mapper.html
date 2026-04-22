@@ -54,7 +54,7 @@
     async function run() {
       try {
         document.getElementById('status').innerText = 'Loading main bike...';
-        const bikeGlb = await loadModel('/models/Grops Bikes1.glb');
+        const bikeGlb = await loadModel('/models/Grops_Bikes1.glb');
         const bikeStats = getMeshStats(bikeGlb.scene);
         console.log(`Loaded bike, found ${bikeStats.length} meshes.`);
 

@@ -13,7 +13,50 @@ const CAT_COLOR = {
   'Engine Control Units': '#00b050',
   'Transmission': '#0077cc',
   'Chassis': '#cc7700',
-  'Electrification': '#9900cc',
+  // 'Electrification': '#9900cc',
+}
+
+// ── Sidebar Category Accordion ───────────────────────────────────────────
+function SidebarCategory({ category, comps, hoveredComponent, hoveredMeshId, setHoveredComponent, navigate }) {
+  const [isOpen, setIsOpen] = useState(category === 'Engine') // Engine open by default
+
+  return (
+    <div className="sidebar-category-group">
+      <button
+        className="sidebar-category-header"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ '--cat-color': CAT_COLOR[category] || '#00893D' }}
+      >
+        <span className="sidebar-cat-dot" style={{ background: CAT_COLOR[category] || '#00893D' }} />
+        <span className="sidebar-cat-name">{category}</span>
+        <span className={`sidebar-cat-chevron ${isOpen ? 'open' : ''}`}>›</span>
+      </button>
+
+      <div className={`sidebar-category-content ${isOpen ? 'open' : ''}`}>
+        {comps.map(comp => {
+          const isActive =
+            hoveredComponent === comp.id ||
+            hoveredMeshId === comp.id ||
+            useShowroomStore.getState().selectedComponent === comp.id
+
+          return (
+            <button
+              key={comp.id}
+              id={`sidebar-btn-${comp.id}`}
+              className={`component-btn ${isActive ? 'active' : ''}`}
+              style={{ '--cat-color': CAT_COLOR[comp.category] || '#00893D' }}
+              onMouseEnter={() => setHoveredComponent(comp.id)}
+              onMouseLeave={() => setHoveredComponent(null)}
+              onClick={() => useShowroomStore.getState().setSelectedComponent(comp.id)}
+            >
+              <span className="comp-btn-label">{comp.label}</span>
+              {isActive && <span className="comp-btn-arrow">→</span>}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 // ── DOM loading overlay (pure HTML, outside Canvas entirely) ─────────────
@@ -161,43 +204,23 @@ export default function Home() {
 
           <div className="component-list">
             {Object.entries(
-              components.reduce((acc, comp) => {
-                if (!acc[comp.category]) acc[comp.category] = []
-                acc[comp.category].push(comp)
-                return acc
-              }, {})
+              components
+                .filter(c => c.category !== 'Electrification')
+                .reduce((acc, comp) => {
+                  if (!acc[comp.category]) acc[comp.category] = []
+                  acc[comp.category].push(comp)
+                  return acc
+                }, {})
             ).map(([category, comps]) => (
-              <div key={category} className="sidebar-category-group">
-                <div
-                  className="sidebar-category-label"
-                  style={{ '--cat-color': CAT_COLOR[category] || '#00893D' }}
-                >
-                  <span className="sidebar-cat-dot" style={{ background: CAT_COLOR[category] || '#00893D' }} />
-                  {category}
-                </div>
-
-                {comps.map(comp => {
-                  const isActive =
-                    hoveredComponent === comp.id ||
-                    hoveredMeshId === comp.id ||
-                    useShowroomStore.getState().selectedComponent === comp.id
-
-                  return (
-                    <button
-                      key={comp.id}
-                      id={`sidebar-btn-${comp.id}`}
-                      className={`component-btn ${isActive ? 'active' : ''}`}
-                      style={{ '--cat-color': CAT_COLOR[comp.category] || '#00893D' }}
-                      onMouseEnter={() => setHoveredComponent(comp.id)}
-                      onMouseLeave={() => setHoveredComponent(null)}
-                      onClick={() => useShowroomStore.getState().setSelectedComponent(comp.id)}
-                    >
-                      <span className="comp-btn-label">{comp.label}</span>
-                      {isActive && <span className="comp-btn-arrow">→</span>}
-                    </button>
-                  )
-                })}
-              </div>
+              <SidebarCategory
+                key={category}
+                category={category}
+                comps={comps}
+                hoveredComponent={hoveredComponent}
+                hoveredMeshId={hoveredMeshId}
+                setHoveredComponent={setHoveredComponent}
+                navigate={navigate}
+              />
             ))}
           </div>
         </div>
