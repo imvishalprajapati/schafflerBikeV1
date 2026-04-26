@@ -237,11 +237,11 @@ export default function Home() {
       </div>
 
       {/* ── Watermark ── */}
-      <div className="home-watermark">
-        {/* <span className="watermark-text">DEMO VERSION</span> */}
+      {/* <div className="home-watermark">
+        <span className="watermark-text">DEMO VERSION</span>
         <div className="watermark-separator" />
         <span className="watermark-text">SK3D</span>
-      </div>
+      </div> */}
 
       {/* ── Zoom hint — changes based on explode state ── */}
       <ZoomHint />
