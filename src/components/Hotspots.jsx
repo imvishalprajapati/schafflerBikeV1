@@ -6,10 +6,10 @@ import components from '../data/components.js'
 // Category colors
 const catColor = {
   'Engine': '#00893D',
-  'Engine Control Units': '#00b050',
-  'Transmission': '#0077cc',
-  'Chassis': '#cc7700',
-  'Electrification': '#9900cc',
+  'Engine Control Units': '#00893D',
+  'Transmission': '#00893D',
+  'Chassis': '#00893D',
+  'Electrification': '#00893D',
 }
 
 function HotspotPin({ component }) {
@@ -23,7 +23,7 @@ function HotspotPin({ component }) {
   // Pin is active if selected via sidebar, 3D mesh hover, OR if it's the currently selected component
   const isHovered = hoveredComponent === component.id || hoveredMeshId === component.id || selectedComponent === component.id
   const color = catColor[component.category] || '#00893D'
-  
+
   // 1. Use dynamic anchor (calculated from meshes) if available
   // 2. Otherwise, for safety, DO NOT fall back to bad hardcoded anchors 
   //    if they would float in the air. We only show the pin if high-fidelity 

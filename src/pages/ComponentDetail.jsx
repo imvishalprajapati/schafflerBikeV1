@@ -7,10 +7,10 @@ import InfoPanel from '../components/InfoPanel.jsx'
 
 const catColor = {
   'Engine': '#00893D',
-  'Engine Control Units': '#00b050',
-  'Transmission': '#0077cc',
-  'Chassis': '#cc7700',
-  'Electrification': '#9900cc',
+  'Engine Control Units': '#00893D',
+  'Transmission': '#00893D',
+  'Chassis': '#00893D',
+  'Electrification': '#00893D',
 }
 
 export default function ComponentDetail() {

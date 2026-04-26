@@ -44,9 +44,9 @@ const components = [
     model: "Parts/M4A.glb",
     anchor: [-1.0, 3.5, 0.0],
     tagline: "ECU with integrated throttle body for light motorcycles and scooters",
-    highlights: ["Single/twin sparks solution", "Very compact size and easy mounting", "Throttle body size from ø16 up to 34 mm"],
+    highlights: ["Single cylinder, single/twin sparks solution", "Very compact size and easy mounting", "Throttle body size from ø16 up to 34 mm"],
     features: [
-      "Single pocket 24/34 pins connector (equivalent to a 38/43 pins standalone ECU)",
+      "Single pocket 26 orbit connector (equivalent to a 38/43 pins standalone ECU)",
       "IPX6 and IPX9K (high pressure cleaning)",
       "Operating temperature range: -30 °C up to +85 °C",
       "32 bit microcontroller, 32 MHz, 768 Kb Flash",
@@ -106,7 +106,7 @@ const components = [
   // ── ENGINE PRODUCTS ──────────────────────────────────────────────────
   {
     id: "fuel_injector",
-    label: "Fuel Injector — Gasoline Deka 7",
+    label: "Fuel Injector",
     targetMeshes: ["Fuel Injector"],
     category: "Engine",
     model: "Parts/Fuel Injector.glb",
@@ -116,7 +116,7 @@ const components = [
     features: [
       "System pressure: 2.5 to 6 bar",
       "Static flow rate: 0.75 g/s to 6.0 g/s per application",
-      "SMD size: 60 µm & higher",
+      "SMD size: 60 µm & higher (Qs < 3 g/s @ 400 kPa and Cone Spray)",
       "Opening/Closing time: <1.1 ms / <0.8 ms",
       "Linearity Range/Pulse: 10:1; 1.2–1.3 ms (MOV = 5.5 V)",
       "Typical spray pattern: Cone 10°–30°, bent 5°–25°, split spray 15°–30°",
@@ -327,6 +327,7 @@ const components = [
     model: "Parts/One way Clutch.glb",
     hasExplodedView: true,
     explodeTrigger: "zoom",
+    explodeMultiplier: 0.3,
     anchor: [0.771, -2.246, 0.950],
     tagline: "Roller clutch for electric starter drives with integrated torque limitation",
     highlights: ["Easy to mount", "Low space requirements and reduced weight", "Suitable for high power densities"],
@@ -513,6 +514,7 @@ const components = [
     model: "Parts/Drawn Cup Needle Roller Bearing HK - HNH.glb",
     hasExplodedView: true,
     explodeTrigger: "zoom",
+    // explodeMultiplier: 0.5,
     anchor: [-0.068, -2.086, -0.710],
     tagline: "High load capacity needle bearing for swing arm suspension applications",
     highlights: ["High load rating capacity", "Weight saving potential", "Cost-efficient deep drawing technology"],

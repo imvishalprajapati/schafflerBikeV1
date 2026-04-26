@@ -11,7 +11,7 @@ function createWindow() {
     fullscreen: false,          // set true for kiosk/trade-show
     frame: false,               // frameless for premium look
     backgroundColor: '#0a0a0f',
-    icon: path.join(__dirname, '../public/icon.png'),
+    icon: path.join(__dirname, '../public/SchaefflerLogo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,

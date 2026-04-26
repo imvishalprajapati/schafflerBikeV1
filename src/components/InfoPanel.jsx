@@ -3,9 +3,9 @@ import gsap from 'gsap'
 
 const catColor = {
   'Engine': '#00893D',
-  'Engine Control Units': '#00b050',
-  'Transmission': '#0077cc',
-  'Chassis': '#cc7700',
+  'Engine Control Units': '#00893D',
+  'Transmission': '#00893D',
+  'Chassis': '#00893D',
   // 'Electrification': '#9900cc',  // hidden
 }
 
@@ -102,9 +102,9 @@ export default function InfoPanel({ component }) {
 
       {/* Features — accordion */}
       {component.features?.length > 0 && (
-        <AccordionSection 
-          label="Features" 
-          color={color} 
+        <AccordionSection
+          label="Features"
+          color={color}
           defaultOpen={true}
         >
           <ul className="info-features-list">
@@ -117,9 +117,9 @@ export default function InfoPanel({ component }) {
 
       {/* Advantages — accordion */}
       {component.advantages?.length > 0 && (
-        <AccordionSection 
-          label="Advantages" 
-          color={color} 
+        <AccordionSection
+          label="Advantages"
+          color={color}
           defaultOpen={!component.features?.length}
         >
           <ul className="info-features-list">
@@ -132,9 +132,9 @@ export default function InfoPanel({ component }) {
 
       {/* Technical Specifications — accordion */}
       {component.specs && Object.keys(component.specs).length > 0 && (
-        <AccordionSection 
-          label="Technical Specifications" 
-          color={color} 
+        <AccordionSection
+          label="Technical Specifications"
+          color={color}
           defaultOpen={!component.features?.length && !component.advantages?.length}
         >
           <table className="specs-table">

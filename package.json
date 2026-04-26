@@ -49,7 +49,10 @@
       "output": "dist-electron"
     },
     "win": {
-      "target": ["portable", "zip"],
+      "target": [
+        "portable",
+        "zip"
+      ],
       "forceCodeSigning": false
     },
     "mac": {

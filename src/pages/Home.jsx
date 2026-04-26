@@ -10,9 +10,9 @@ import Hotspots from '../components/Hotspots.jsx'
 // ── Category colours ─────────────────────────────────────────────────────
 const CAT_COLOR = {
   'Engine': '#00893D',
-  'Engine Control Units': '#00b050',
-  'Transmission': '#0077cc',
-  'Chassis': '#cc7700',
+  'Engine Control Units': '#00893D',
+  'Transmission': '#00893D',
+  'Chassis': '#00893D',
   // 'Electrification': '#9900cc',
 }
 
@@ -168,7 +168,7 @@ export default function Home() {
             {/* Bike scene */}
             <Bounds fit clip margin={1.2}>
               <Bvh firstHitOnly>
-                <group ref={bikeGroupRef} position={[0, -0.8, 0]} scale={0.5}>
+                <group ref={bikeGroupRef} position={[0, -0.8, 0]} scale={0.5} rotation={[0, Math.PI / 2, 0]}>
                   <BikeViewer groupRef={bikeGroupRef} />
                   <Hotspots />
                 </group>
