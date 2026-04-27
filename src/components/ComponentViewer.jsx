@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, Suspense } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Environment, useGLTF, Bounds, PerformanceMonitor, Center } from '@react-three/drei'
+import { OrbitControls, useGLTF, Bounds, PerformanceMonitor, Center } from '@react-three/drei'
 import { ErrorBoundary } from './ErrorBoundary.jsx'
 
 // ── Zoom thresholds ──────────────────────────────────────────────────────────
@@ -264,7 +264,7 @@ export default function ComponentViewer({
       <PerformanceMonitor onDecline={() => setDpr(1)} />
       <Suspense fallback={null}>
         {/* Lighting — neutral studio setup */}
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.7} />
         <directionalLight position={[5, 5, 5]} intensity={1.5} castShadow />
         <directionalLight position={[-3, 3, -3]} intensity={0.5} color="#ffffff" />
         <pointLight position={[0, 4, 2]} intensity={0.8} color="#ffffff" />
@@ -294,7 +294,8 @@ export default function ComponentViewer({
           )}
         </Bounds>
 
-        <Environment preset="warehouse" />
+        {/* Hemisphere light replaces the remote CDN Environment preset — fully offline */}
+        <hemisphereLight skyColor="#ffffff" groundColor="#444455" intensity={0.6} />
 
         <OrbitControls
           enablePan={false}
